@@ -39,10 +39,6 @@ public class CharManage extends AppCompatActivity {
                 oauth();
             }
         });
-        intent= getIntent();
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            getToken(getAuthCode(intent));
-        }
 
 
     }
@@ -83,7 +79,8 @@ public class CharManage extends AppCompatActivity {
                 "  \"code\":\""+code+"\"\n" +
                 "}";
 
-        Call<AuthToken> token = service.tokenGet(basic,content,host,body);
+          Call<AuthToken> token = service.tokenGet(basic,content,host,body);
+
         SharedPreferences spref = getApplicationContext().getSharedPreferences(TOKEN_PREF,MODE_PRIVATE);
 
 
