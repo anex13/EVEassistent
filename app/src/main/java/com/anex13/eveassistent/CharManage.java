@@ -5,14 +5,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
-import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,17 +21,19 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CharManage extends AppCompatActivity {
-    private static final String TOKEN_PREF ="token pref" ;
-    private static final String TOKEN_TAG = "auth token";
+    public static final String TOKEN_PREF = "token pref";
+    public static final String TOKEN_TAG = "auth token";
     final String authBasic = "MGYzMTM2Mjc2MGM5NGM5ZjkyODBkZDI5MzQ3ZTljMjQ6QjEwQXBaMkJoc3lKUTVhcVNwSGV6Z2gxS1JWRGVVTlZqSlBFNVpOZA==";
-    Intent intent ;
+    Intent intent;
+    SharedPreferences spref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_char_manage);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        spref = getSharedPreferences(TOKEN_PREF,MODE_PRIVATE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +56,8 @@ public class CharManage extends AppCompatActivity {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authFull));
         startActivity(browserIntent);
     }
-    public static String getAuthCode (Intent authintent){//допилить проверку стэйта
+
+    public static String getAuthCode(Intent authintent) {//допилить проверку стэйта
         Uri uri = authintent.getData();
         String valueOne = uri.getQueryParameter("code");
         String valueTwo = uri.getQueryParameter("state");
@@ -64,53 +67,56 @@ public class CharManage extends AppCompatActivity {
         // TODO: 22.11.2016 записать куданибудь код и проверить стэйт
     }
 
-    private void getToken(String code){
-
+    private void getToken(String code) {
+        Gson gson = new GsonBuilder()
+                .setLenient().create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://login.eveonline.com")
-                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("https://login.eveonline.com/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         AuthService service = retrofit.create(AuthService.class);
-        String basic="Basic "+authBasic;
-        String content="application/x-www-form-urlencoded";
-        String host ="login.eveonline.com";
-        String body ="{\n" +
-                "  \"grant_type\":\"authorization_code\",\n" +
-                "  \"code\":\""+code+"\"\n" +
-                "}";
-
-          Call<AuthToken> token = service.tokenGet(basic,content,host,body);
-
-        SharedPreferences spref = getApplicationContext().getSharedPreferences(TOKEN_PREF,MODE_PRIVATE);
 
 
-       SharedPreferences.Editor ed=spref.edit();
-        ed.putString(TOKEN_TAG,token.toString());
-        Log.i("token",token.toString());
-        String barer="Bearer "+token.toString();
-        Call<CharID> character= service.getID(barer);
-        Log.i("Char",character.toString());
+        Call<AuthToken> token = service.tokenGet("authorization_code", code);
 
-       // POST https://login.eveonline.com/oauth/token HTTP/1.1
+        token.enqueue(new Callback<AuthToken>() {
+            @Override
+            public void onResponse(Call<AuthToken> call, Response<AuthToken> response) {
+                if (!response.isSuccessful()) {
+                    Log.e("token", "resp not succes");
+                    Log.e("token", response.message());
+                    Log.e("token", response.raw().toString());
+                }
+                if (response.isSuccessful()) {
 
-     //   Authorization: Basic bG9...ZXQ=
-             //   Content-Type: application/x-www-form-urlencoded
-       // Host: login.eveonline.com
+                    SharedPreferences.Editor ed = spref.edit();
+                    ed.putString(TOKEN_TAG, response.body().toString());
+                    ed.apply();
+                    Log.e("token", spref.getString(TOKEN_TAG,""));
+                }
+            }
 
-             //   grant_type=authorization_code&code=gEyuYF_rf...ofM0
+            @Override
+            public void onFailure(Call<AuthToken> call, Throwable t) {
+                Log.e("get token fail", "FAIL");
+                Log.e("fail", t.getMessage());
+            }
+        });
+    }
 
+
+
+    private void writeCharInfo() {
 
     }
-    private void writeCharInfo(){
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        intent = getIntent();
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            getToken(getAuthCode(intent));
+        }
     }
-@Override
-    public void onResume(){
-    super.onResume();
-    intent= getIntent();
-    if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-        getToken(getAuthCode(intent));
-    }
-}
 
 }

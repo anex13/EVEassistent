@@ -6,7 +6,6 @@ package com.anex13.eveassistent;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 public class CharID {
 
     @SerializedName("CharacterID")
@@ -27,6 +26,31 @@ public class CharID {
     @SerializedName("CharacterOwnerHash")
     @Expose
     private String characterOwnerHash;
+
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public CharID() {
+    }
+
+    /**
+     *
+     * @param scopes
+     * @param tokenType
+     * @param characterName
+     * @param expiresOn
+     * @param characterOwnerHash
+     * @param characterID
+     */
+    public CharID(Integer characterID, String characterName, String expiresOn, String scopes, String tokenType, String characterOwnerHash) {
+        this.characterID = characterID;
+        this.characterName = characterName;
+        this.expiresOn = expiresOn;
+        this.scopes = scopes;
+        this.tokenType = tokenType;
+        this.characterOwnerHash = characterOwnerHash;
+    }
 
     /**
      *
