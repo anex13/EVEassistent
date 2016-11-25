@@ -16,16 +16,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     SharedPreferences spref;
     String barer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +45,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        spref = getSharedPreferences(CharManage.TOKEN_PREF,MODE_PRIVATE);
+        spref = getSharedPreferences(CharManage.TOKEN_PREF, MODE_PRIVATE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +90,7 @@ public class MainActivity extends AppCompatActivity
                     Log.e("id", "resp not succes");
                     Log.e("id", response.message());
                     Log.e("id", response.raw().toString());
+                    refreshToken();
                 }
                 if (response.isSuccessful()) {
                     Log.e("id", response.body().toString());
@@ -156,8 +162,46 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void refreshToken() {
+        Gson gson = new GsonBuilder()
+                .setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://login.eveonline.com/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        AuthService service = retrofit.create(AuthService.class);
+String oldToken = spref.getString(CharManage.TOKEN_TAG,"");
+        Log.i("old token", spref.getString(CharManage.TOKEN_TAG, ""));
+        Call<AuthToken> newToken = service.tokenRefresh("refresh_token", oldToken);
+
+        newToken.enqueue(new Callback<AuthToken>() {
+            @Override
+            public void onResponse(Call<AuthToken> call, Response<AuthToken> response) {
+                if (!response.isSuccessful()) {
+                    Log.e("token", "resp not succes");
+                    Log.e("token", response.message());
+                    Log.e("token", response.raw().toString());
+                }
+                if (response.isSuccessful()) {
+
+                    SharedPreferences.Editor ed = spref.edit();
+                    ed.putString(CharManage.TOKEN_TAG, response.body().toString());
+                    ed.apply();
+                    Log.e("newtoken", spref.getString(CharManage.TOKEN_TAG, ""));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AuthToken> call, Throwable t) {
+                Log.e("get token fail", "FAIL");
+                Log.e("fail", t.getMessage());
+            }
+        });
+    }
+
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         barer = "Bearer " + spref.getString(CharManage.TOKEN_TAG, "");
         Log.e("token from spref", barer);
