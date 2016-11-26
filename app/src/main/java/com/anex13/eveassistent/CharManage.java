@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 
 
+import com.anex13.eveassistent.api.AuthService;
+import com.anex13.eveassistent.classesForApi.AuthToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,6 +25,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CharManage extends AppCompatActivity {
     public static final String TOKEN_PREF = "token pref";
     public static final String TOKEN_TAG = "auth token";
+    public static final String REF_TOKEN_TAG = "ref token first";
+    public static final String CODE_TAG = "auth code";
     final String authBasic = "MGYzMTM2Mjc2MGM5NGM5ZjkyODBkZDI5MzQ3ZTljMjQ6QjEwQXBaMkJoc3lKUTVhcVNwSGV6Z2gxS1JWRGVVTlZqSlBFNVpOZA==";
     Intent intent;
     SharedPreferences spref;
@@ -50,19 +54,22 @@ public class CharManage extends AppCompatActivity {
         String authRespType = "response_type=code&";
         String authRedir = "redirect_uri=anexevetest://auth/&";
         String authClientID = "client_id=0f31362760c94c9f9280dd29347e9c24&";
-        String authScope = "scope=characterContactsRead&";
+        String authScope = "scope=characterContactsRead characterLocationRead&";
         String authState = "state=uniquestate123";
         String authFull = authMain + authRespType + authRedir + authClientID + authScope + authState;
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authFull));
         startActivity(browserIntent);
     }
 
-    public static String getAuthCode(Intent authintent) {//допилить проверку стэйта
+    public String getAuthCode(Intent authintent) {//допилить проверку стэйта
         Uri uri = authintent.getData();
         String valueOne = uri.getQueryParameter("code");
         String valueTwo = uri.getQueryParameter("state");
         Log.e("auth", valueOne);
         Log.e("auth", valueTwo);
+        SharedPreferences.Editor ed = spref.edit();
+        ed.putString(CODE_TAG, valueOne);
+        ed.apply();
         return valueOne;
         // TODO: 22.11.2016 записать куданибудь код и проверить стэйт
     }
@@ -91,6 +98,7 @@ public class CharManage extends AppCompatActivity {
 
                     SharedPreferences.Editor ed = spref.edit();
                     ed.putString(TOKEN_TAG, response.body().toString());
+                    ed.putString(REF_TOKEN_TAG,response.body().getRefreshToken());
                     ed.apply();
                     Log.e("token", spref.getString(TOKEN_TAG,""));
                 }

@@ -1,4 +1,4 @@
-package com.anex13.eveassistent;
+package com.anex13.eveassistent.classesForApi;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

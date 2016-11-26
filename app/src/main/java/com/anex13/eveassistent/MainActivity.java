@@ -16,6 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import com.anex13.eveassistent.api.AuthService;
+import com.anex13.eveassistent.api.GetData;
+import com.anex13.eveassistent.classesForApi.AuthToken;
+import com.anex13.eveassistent.classesForApi.CharID;
+import com.anex13.eveassistent.classesForApi.CurentPosition;
+import com.anex13.eveassistent.classesForApi.SolarSystem;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -28,8 +34,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String PREF_ID_TAG = "char id";
     SharedPreferences spref;
     String barer;
+    public static final String PREF_NAME_TAG="name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +50,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 //start sign in
-
+                refreshToken();
+            }
+        });
+        final Button getData = (Button) findViewById(R.id.button2);
+        getData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calldata();
             }
         });
         spref = getSharedPreferences(CharManage.TOKEN_PREF, MODE_PRIVATE);
@@ -94,6 +109,10 @@ public class MainActivity extends AppCompatActivity
                 }
                 if (response.isSuccessful()) {
                     Log.e("id", response.body().toString());
+                    SharedPreferences.Editor ed =spref.edit();
+                    ed.putString(PREF_NAME_TAG,response.body().getCharacterName());
+                    ed.putInt(PREF_ID_TAG,response.body().getCharacterID());
+                    ed.apply();
                 }
             }
 
@@ -164,15 +183,18 @@ public class MainActivity extends AppCompatActivity
 
     public void refreshToken() {
         Gson gson = new GsonBuilder()
-                .setLenient().create();
+              .setLenient().create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://login.eveonline.com/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         AuthService service = retrofit.create(AuthService.class);
-String oldToken = spref.getString(CharManage.TOKEN_TAG,"");
+        String oldToken = spref.getString(CharManage.REF_TOKEN_TAG, "");
         Log.i("old token", spref.getString(CharManage.TOKEN_TAG, ""));
-        Call<AuthToken> newToken = service.tokenRefresh("refresh_token", oldToken);
+        Log.i("code", spref.getString(CharManage.CODE_TAG, ""));
+        Log.i("ref", spref.getString(CharManage.REF_TOKEN_TAG, ""));
+
+        Call<AuthToken> newToken = service.tokenRefresh("refresh_token",oldToken);
 
         newToken.enqueue(new Callback<AuthToken>() {
             @Override
@@ -206,4 +228,37 @@ String oldToken = spref.getString(CharManage.TOKEN_TAG,"");
         barer = "Bearer " + spref.getString(CharManage.TOKEN_TAG, "");
         Log.e("token from spref", barer);
     }
+
+    public void calldata() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://crest-tq.eveonline.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetData service = retrofit.create(GetData.class);
+        String barer1 = "Bearer " + spref.getString(CharManage.TOKEN_TAG, "");
+        String path =Integer.toString(spref.getInt(PREF_ID_TAG,0));
+        Call<CurentPosition<SolarSystem>> character = service.getData(barer1,path);
+        character.enqueue(new Callback<CurentPosition<SolarSystem>>() {
+            @Override
+            public void onResponse(Call<CurentPosition<SolarSystem>> call, Response<CurentPosition<SolarSystem>> response) {
+                if (!response.isSuccessful()) {
+
+                    Log.e("token", "resp not succes");
+                    Log.e("token", response.message());
+                    Log.e("token", response.raw().toString());
+                }
+                if (response.isSuccessful()) {
+                    Log.e("curent loc", response.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CurentPosition<SolarSystem>> call, Throwable t) {
+
+                Log.e("get token fail", "FAIL");
+                Log.e("fail", t.getMessage());
+            }
+        });
+    }
 }
+

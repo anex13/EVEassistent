@@ -1,4 +1,7 @@
-package com.anex13.eveassistent;
+package com.anex13.eveassistent.api;
+
+import com.anex13.eveassistent.classesForApi.CurentPosition;
+import com.anex13.eveassistent.classesForApi.SolarSystem;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -8,8 +11,8 @@ import retrofit2.http.Path;
 
 public interface GetData {
     @Headers({"User-Agent: eveassistant", "Host: login.eveonline.com"})
-    @GET("{path}")
-    Call<CharID> getData(@Header("Authorization") String auth, @Path("path") String path);
+    @GET("characters/{id}/location/")
+    Call<CurentPosition<SolarSystem>> getData(@Header("Authorization") String auth, @Path("id") String path);
 }
 /*
 public void getUserID() {

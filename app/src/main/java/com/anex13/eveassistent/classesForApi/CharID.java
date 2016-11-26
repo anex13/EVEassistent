@@ -1,4 +1,4 @@
-package com.anex13.eveassistent;
+package com.anex13.eveassistent.classesForApi;
 
 /**
  * Created by it.zavod on 24.11.2016.
