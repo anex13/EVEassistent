@@ -1,19 +1,21 @@
 package com.anex13.eveassistent.api;
 
-import com.anex13.eveassistent.classesForApi.CurentPosition;
-import com.anex13.eveassistent.classesForApi.SolarSystem;
+import com.anex13.eveassistent.classesForApi.CharPublicData;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Path;
 
 public interface GetData {
-    @Headers({"User-Agent: eveassistant", "Host: login.eveonline.com"})
-    @GET("characters/{id}/location/")
-    Call<CurentPosition<SolarSystem>> getData(@Header("Authorization") String auth, @Path("id") String path);
+
+    @Headers({"Accept: application/json"})
+    @GET("characters/{}/?datasource=tranquility")
+    Call<CharPublicData> getPublicData(@Path("id") int id);
 }
+
+
+//https://esi.tech.ccp.is/legacy/
 /*
 public void getUserID() {
         Retrofit retrofit1 = new Retrofit.Builder()

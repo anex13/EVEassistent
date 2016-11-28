@@ -20,7 +20,6 @@
         </activity>
         <activity
             android:name=".CharManage"
-            android:label="@string/title_activity_char_manage"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -32,6 +31,8 @@
                     android:scheme="anexevetest" />
             </intent-filter>
         </activity>
+        <service android:name=".HttpService" />
+
     </application>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>

@@ -1,5 +1,6 @@
 package com.anex13.eveassistent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity
     private static final String PREF_ID_TAG = "char id";
     SharedPreferences spref;
     String barer;
-    public static final String PREF_NAME_TAG="name";
+    public static final String PREF_NAME_TAG = "name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +61,12 @@ public class MainActivity extends AppCompatActivity
                 calldata();
             }
         });
-        spref = getSharedPreferences(CharManage.TOKEN_PREF, MODE_PRIVATE);
+        spref = getSharedPreferences(ConstStr.AUTH_PREF, MODE_PRIVATE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getUserID();
+
             }
 
         });
@@ -91,46 +92,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void getUserID() {
-        Retrofit retrofit1 = new Retrofit.Builder()
-                .baseUrl("https://login.eveonline.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        AuthService service1 = retrofit1.create(AuthService.class);
-        Call<CharID> character = service1.getID(barer);
-        character.enqueue(new Callback<CharID>() {
-            @Override
-            public void onResponse(Call<CharID> call, Response<CharID> response) {
-                if (!response.isSuccessful()) {
-                    Log.e("id", "resp not succes");
-                    Log.e("id", response.message());
-                    Log.e("id", response.raw().toString());
-                    refreshToken();
-                }
-                if (response.isSuccessful()) {
-                    Log.e("id", response.body().toString());
-                    SharedPreferences.Editor ed =spref.edit();
-                    ed.putString(PREF_NAME_TAG,response.body().getCharacterName());
-                    ed.putInt(PREF_ID_TAG,response.body().getCharacterID());
-                    ed.apply();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<CharID> call, Throwable t) {
-
-                Log.e("get token fail", "FAIL");
-                Log.e("fail", t.getMessage());
-            }
-        });
-        //Log.i("Char", character.toString());
-
-        // POST https://login.eveonline.com/oauth/token HTTP/1.1
-        //   Authorization: Basic bG9...ZXQ=
-        //   Content-Type: application/x-www-form-urlencoded
-        // Host: login.eveonline.com
-        //   grant_type=authorization_code&code=gEyuYF_rf...ofM0
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -182,50 +144,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshToken() {
-        Gson gson = new GsonBuilder()
-              .setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://login.eveonline.com/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-        AuthService service = retrofit.create(AuthService.class);
-        String oldToken = spref.getString(CharManage.REF_TOKEN_TAG, "");
-        Log.i("old token", spref.getString(CharManage.TOKEN_TAG, ""));
-        Log.i("code", spref.getString(CharManage.CODE_TAG, ""));
-        Log.i("ref", spref.getString(CharManage.REF_TOKEN_TAG, ""));
 
-        Call<AuthToken> newToken = service.tokenRefresh("refresh_token",oldToken);
-
-        newToken.enqueue(new Callback<AuthToken>() {
-            @Override
-            public void onResponse(Call<AuthToken> call, Response<AuthToken> response) {
-                if (!response.isSuccessful()) {
-                    Log.e("token", "resp not succes");
-                    Log.e("token", response.message());
-                    Log.e("token", response.raw().toString());
-                }
-                if (response.isSuccessful()) {
-
-                    SharedPreferences.Editor ed = spref.edit();
-                    ed.putString(CharManage.TOKEN_TAG, response.body().toString());
-                    ed.apply();
-                    Log.e("newtoken", spref.getString(CharManage.TOKEN_TAG, ""));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AuthToken> call, Throwable t) {
-                Log.e("get token fail", "FAIL");
-                Log.e("fail", t.getMessage());
-            }
-        });
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
-        barer = "Bearer " + spref.getString(CharManage.TOKEN_TAG, "");
+        barer = "Bearer " + spref.getString(ConstStr.AUTH_TOKEN_TAG, "");
         Log.e("token from spref", barer);
     }
 
@@ -235,9 +161,9 @@ public class MainActivity extends AppCompatActivity
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         GetData service = retrofit.create(GetData.class);
-        String barer1 = "Bearer " + spref.getString(CharManage.TOKEN_TAG, "");
-        String path =Integer.toString(spref.getInt(PREF_ID_TAG,0));
-        Call<CurentPosition<SolarSystem>> character = service.getData(barer1,path);
+        String barer1 = "Bearer " + spref.getString(ConstStr.AUTH_TOKEN_TAG, "");
+        String path = Integer.toString(spref.getInt(PREF_ID_TAG, 0));
+        Call<CurentPosition<SolarSystem>> character = service.getData(barer1, path);
         character.enqueue(new Callback<CurentPosition<SolarSystem>>() {
             @Override
             public void onResponse(Call<CurentPosition<SolarSystem>> call, Response<CurentPosition<SolarSystem>> response) {
@@ -261,4 +187,3 @@ public class MainActivity extends AppCompatActivity
         });
     }
 }
-
