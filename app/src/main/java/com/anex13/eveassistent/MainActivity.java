@@ -1,6 +1,5 @@
 package com.anex13.eveassistent;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,21 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-
-import com.anex13.eveassistent.api.AuthService;
-import com.anex13.eveassistent.api.GetData;
-import com.anex13.eveassistent.classesForApi.AuthToken;
-import com.anex13.eveassistent.classesForApi.CharID;
-import com.anex13.eveassistent.classesForApi.CurentPosition;
-import com.anex13.eveassistent.classesForApi.SolarSystem;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity
@@ -58,7 +42,7 @@ public class MainActivity extends AppCompatActivity
         getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                calldata();
+               // calldata();
             }
         });
         spref = getSharedPreferences(ConstStr.AUTH_PREF, MODE_PRIVATE);
@@ -155,7 +139,7 @@ public class MainActivity extends AppCompatActivity
         Log.e("token from spref", barer);
     }
 
-    public void calldata() {
+   /* public void calldata() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://crest-tq.eveonline.com/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -185,5 +169,6 @@ public class MainActivity extends AppCompatActivity
                 Log.e("fail", t.getMessage());
             }
         });
-    }
+    }*/
 }
+// TODO: 29.11.2016 ss
