@@ -62,17 +62,12 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
         startActivity(browserIntent);
     }
 
-    private void writeCharInfo() {
-
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         intent = getIntent();
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            HttpService.getTokens(getApplicationContext(), getAuthCode(intent));
-            HttpService.getCharInitialData(getApplicationContext());
+            HttpService.charCreateNew(getApplicationContext(), getAuthCode(intent));
             //перекинуть в мэйн.
         }
     }

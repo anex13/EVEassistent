@@ -12,6 +12,9 @@ public interface GetData {
     @Headers({"Accept: application/json"})
     @GET("characters/{}/?datasource=tranquility")
     Call<CharPublicData> getPublicData(@Path("id") int id);
+
+
+
 }
 
 

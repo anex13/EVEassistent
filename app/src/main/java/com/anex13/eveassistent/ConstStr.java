@@ -5,6 +5,22 @@ package com.anex13.eveassistent;
  */
 
 public class ConstStr {
+    //img server routes
+    public static final String BASE_URL_IMG = "https://imageserver.eveonline.com/";
+    public static final String ALI_URL_IMG = "Alliance/{allianceID}_{width}.png";
+    public static final String CORP_URL_IMG = "Corporation/{corpID}_{width}.png";
+    public static final String CHAR_URL_IMG = "Character/{characterID}_{width}.jpg";
+    public static final String TYPE_URL_IMG = "Type/{typeID}_{width}.png";
+    public static final String RENDER_URL_IMG = "Render/{typeID}_{width}.png";
+    public static final String IMG_SIZE_32 = "32";
+    public static final String IMG_SIZE_64 = "64";
+    public static final String IMG_SIZE_128 = "128";
+    public static final String IMG_SIZE_256 = "256";
+    public static final String IMG_SIZE_512 = "512";
+    public static final String IMG_SIZE_1024 = "1024";
+
+
+
     public static final String BASE_URL_AUTH = "https://login.eveonline.com/";
     public static final String BASE_URL_DATA = "https://crest-tq.eveonline.com/";
     public static final String BASE_URL_ESI = "https://esi.tech.ccp.is/legacy/";
@@ -145,7 +161,41 @@ public class ConstStr {
 
 
     /*
-
+"constellations": {"href": "https://crest-tq.eveonline.com/constellations/"},
+ "itemGroups": {"href": "https://crest-tq.eveonline.com/inventory/groups/"},
+ "corporations": {"href": "https://crest-tq.eveonline.com/corporations/"},
+ "alliances": {"href": "https://crest-tq.eveonline.com/alliances/"},
+ "itemTypes": {"href": "https://crest-tq.eveonline.com/inventory/types/"},
+ "userCount": 7751,
+ "decode": {"href": "https://crest-tq.eveonline.com/decode/"},
+ "marketPrices": {"href": "https://crest-tq.eveonline.com/market/prices/"},
+ "opportunities": {"tasks": {"href": "https://crest-tq.eveonline.com/opportunities/tasks/"},
+ "groups": {"href": "https://crest-tq.eveonline.com/opportunities/groups/"}},
+ "itemCategories": {"href": "https://crest-tq.eveonline.com/inventory/categories/"},
+ "regions": {"href": "https://crest-tq.eveonline.com/regions/"},
+ "bloodlines": {"href": "https://crest-tq.eveonline.com/bloodlines/"},
+ "marketGroups": {"href": "https://crest-tq.eveonline.com/market/groups/"},
+ "systems": {"href": "https://crest-tq.eveonline.com/solarsystems/"},
+ "sovereignty": {"campaigns": {"href": "https://crest-tq.eveonline.com/sovereignty/campaigns/"},
+ 				"structures": {"href": "https://crest-tq.eveonline.com/sovereignty/structures/"}},
+ "tournaments": {"href": "https://crest-tq.eveonline.com/tournaments/"},
+ "virtualGoodStore": {"href": "https://vgs-tq.eveonline.com/"},
+ "serverVersion": "EVE-TRANQUILITY 14.1.1102122.1102122",
+ "userCount_str": "7751",
+ "wars": {"href": "https://crest-tq.eveonline.com/wars/"},
+ "incursions": {"href": "https://crest-tq.eveonline.com/incursions/"},
+ "dogma": {"attributes": {"href": "https://crest-tq.eveonline.com/dogma/attributes/"},
+ 			"effects": {"href": "https://crest-tq.eveonline.com/dogma/effects/"}},
+ "races": {"href": "https://crest-tq.eveonline.com/races/"},
+ "insurancePrices": {"href": "https://crest-tq.eveonline.com/insuranceprices/"},
+ "authEndpoint": {"href": "https://login-tq.eveonline.com/oauth/token/"},
+ "serviceStatus": "online",
+ "industry": {"facilities": {"href": "https://crest-tq.eveonline.com/industry/facilities/"},
+ 				"systems": {"href": "https://crest-tq.eveonline.com/industry/systems/"}},
+ "npcCorporations": {"href": "https://crest-tq.eveonline.com/corporations/npccorps/"},
+ "time": {"href": "https://crest-tq.eveonline.com/time/"},
+ "marketTypes": {"href": "https://crest-tq.eveonline.com/market/types/"},
+ "serverName": "TRANQUILITY"
 
      */
 
