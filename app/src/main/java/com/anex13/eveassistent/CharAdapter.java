@@ -2,7 +2,6 @@ package com.anex13.eveassistent;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,34 +20,88 @@ import com.squareup.picasso.Picasso;
 
 public class CharAdapter extends CursorAdapter {
     private Context mContext;
+
     public CharAdapter(Context context, Cursor c) {
-        super(context, c,0);
-        this.mContext=context;
+        super(context, c, 0);
+        this.mContext = context;
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view= LayoutInflater.from(context).inflate(R.layout.char_personal_data,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.char_personal_data, parent, false);
         return view;
     }
 
     @Override
-    public void bindView(View view, Context context, final Cursor cursor) {
+    public void bindView(View view, final Context context, final Cursor cursor) {
         final CharDBClass character = new CharDBClass(cursor);
         ((TextView) view.findViewById(R.id.char_name)).setText(character.getCharName());
         ((TextView) view.findViewById(R.id.char_corp)).setText(character.getCorpName());
         ((TextView) view.findViewById(R.id.char_birthday)).setText(character.getBirthday());
-        final ImageView userpic= (ImageView) view.findViewById(R.id.user_pic) ;
-        String userpicurl =ConstStr.BASE_URL_IMG+ConstStr.CHAR_URL_IMG+character.getCharID()+ConstStr.IMG_SIZE_512+".jpg";
+        final ImageView userpic = (ImageView) view.findViewById(R.id.user_pic);
+        final String userpicurl = CS.BASE_URL_IMG + CS.CHAR_URL_IMG + character.getCharID() + CS.IMG_SIZE_512 + ".jpg";
         Picasso.with(context)
                 .load(userpicurl)
-                .into(userpic);
-        String corppicurl =ConstStr.BASE_URL_IMG+ConstStr.CORP_URL_IMG+character.getCorpID()+ConstStr.IMG_SIZE_128+".png";
-        ImageView corppic = (ImageView) view.findViewById(R.id.corp_pic);
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(userpic, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+                        //Try again online if cache failed
+                        Picasso.with(context)
+                                .load(userpicurl)
+                                .into(userpic, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        Log.v("Picasso", "Could not fetch image");
+                                    }
+                                });
+                    }
+                });
+        final String corppicurl = CS.BASE_URL_IMG + CS.CORP_URL_IMG + character.getCorpID() + CS.IMG_SIZE_128 + ".png";
+        final ImageView corppic = (ImageView) view.findViewById(R.id.corp_pic);
         Picasso.with(context)
                 .load(corppicurl)
-                .into(corppic);
-       // ((ImageView) view.findViewById(R.id.corp_pic)).setImageDrawable(Drawable.createFromPath(character.getCorpLogoUrl()));
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(corppic, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+                        //Try again online if cache failed
+                        Picasso.with(context)
+                                .load(corppicurl)
+                                .into(corppic, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        Log.v("Picasso", "Could not fetch image");
+                                    }
+                                });
+                    }
+                });
+
+
+        // Picasso.with(context)
+        //         .load(corppicurl)
+        //         .into(corppic);
+        // ((ImageView) view.findViewById(R.id.corp_pic)).setImageDrawable(Drawable.createFromPath(character.getCorpLogoUrl()));
         /*switch1.setChecked(server.getAlarm()!=0);
         switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

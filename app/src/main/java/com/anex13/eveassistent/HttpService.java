@@ -40,7 +40,7 @@ public class HttpService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         switch (intent.getAction()) {
             case ACTION_CREATE_NEW_CHAR: {
-                String code = intent.getStringExtra(ConstStr.AUTH_CODE_TAG);
+                String code = intent.getStringExtra(CS.AUTH_CODE_TAG);
                 AuthToken token = getTokens(code);
                 CharID id = validate(token.getAccessToken());
                 CharPublicData charData = getPublicData(id.getCharacterID());
@@ -87,7 +87,7 @@ public class HttpService extends IntentService {
         Gson gson = new GsonBuilder()
                 .setLenient().create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ConstStr.BASE_URL_AUTH)
+                .baseUrl(CS.BASE_URL_AUTH)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         AuthService service = retrofit.create(AuthService.class);
@@ -111,14 +111,14 @@ public class HttpService extends IntentService {
         Gson gson = new GsonBuilder()
                 .setLenient().create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ConstStr.BASE_URL_AUTH)
+                .baseUrl(CS.BASE_URL_AUTH)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         AuthService service = retrofit.create(AuthService.class);
-        String oldToken = spref.getString(ConstStr.AUTH_REFRESH_TOKEN_TAG, "");
-        Log.i("old token", spref.getString(ConstStr.AUTH_TOKEN_TAG, ""));
-        Log.i("code", spref.getString(ConstStr.AUTH_CODE_TAG, ""));
-        Log.i("ref", spref.getString(ConstStr.AUTH_REFRESH_TOKEN_TAG, ""));
+        String oldToken = spref.getString(CS.AUTH_REFRESH_TOKEN_TAG, "");
+        Log.i("old token", spref.getString(CS.AUTH_TOKEN_TAG, ""));
+        Log.i("code", spref.getString(CS.AUTH_CODE_TAG, ""));
+        Log.i("ref", spref.getString(CS.AUTH_REFRESH_TOKEN_TAG, ""));
 
         Call<AuthToken> newToken = service.tokenRefresh("refresh_token", oldToken);
         try {
@@ -139,7 +139,7 @@ public class HttpService extends IntentService {
     @Nullable
     private static CharID validate(String accsToken) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ConstStr.BASE_URL_AUTH)
+                .baseUrl(CS.BASE_URL_AUTH)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         AuthService service = retrofit.create(AuthService.class);
@@ -158,11 +158,11 @@ public class HttpService extends IntentService {
     @Nullable
     private static CharPublicData getPublicData(int charID) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ConstStr.BASE_URL_ESI)
+                .baseUrl(CS.BASE_URL_ESI)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         GetDataESI service = retrofit.create(GetDataESI.class);
-        String barer = "Bearer " + spref.getString(ConstStr.AUTH_TOKEN_TAG, "");
+        String barer = "Bearer " + spref.getString(CS.AUTH_TOKEN_TAG, "");
         Call<CharPublicData> character = service.getPublicData(charID);
         try {
             Response<CharPublicData> resp = character.execute();
@@ -177,7 +177,7 @@ public class HttpService extends IntentService {
     @Nullable
     private static CharShipInfo getCharShipInfo(String token, int charID) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ConstStr.BASE_URL_ESI)
+                .baseUrl(CS.BASE_URL_ESI)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         GetDataESI service = retrofit.create(GetDataESI.class);
@@ -198,7 +198,7 @@ public class HttpService extends IntentService {
     @Nullable
     private static CorpInfo getCorpInfo(int corpID) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ConstStr.BASE_URL_ESI)
+                .baseUrl(CS.BASE_URL_ESI)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         GetDataESI service = retrofit.create(GetDataESI.class);
@@ -222,10 +222,10 @@ public class HttpService extends IntentService {
 
     public static void charCreateNew(Context context, String authcode) {
         mainContext = context;
-        spref = context.getSharedPreferences(ConstStr.AUTH_PREF, MODE_PRIVATE);
+        spref = context.getSharedPreferences(CS.AUTH_PREF, MODE_PRIVATE);
         Intent newChar = new Intent(context, HttpService.class);
         newChar.setAction(ACTION_CREATE_NEW_CHAR);
-        newChar.putExtra(ConstStr.AUTH_CODE_TAG, authcode);
+        newChar.putExtra(CS.AUTH_CODE_TAG, authcode);
         context.startService(newChar);
     }
 

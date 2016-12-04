@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.anex13.eveassistent.CharManage"
-    android:background="@android:color/background_dark"
-    android:theme="@style/AppTheme.NoActionBar">
+    android:background="@android:color/background_dark">
 
     <ImageView
         android:layout_width="0dp"

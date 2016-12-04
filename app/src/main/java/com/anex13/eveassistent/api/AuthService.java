@@ -1,6 +1,6 @@
 package com.anex13.eveassistent.api;
 
-import com.anex13.eveassistent.ConstStr;
+import com.anex13.eveassistent.CS;
 import com.anex13.eveassistent.classesForApi.AuthToken;
 import com.anex13.eveassistent.classesForApi.CharID;
 
@@ -14,14 +14,14 @@ import retrofit2.http.POST;
 
 public interface AuthService {
     @FormUrlEncoded
-    @Headers({"Authorization: Basic "+ ConstStr.AUTH_BASIC,
+    @Headers({"Authorization: Basic "+ CS.AUTH_BASIC,
             "Content-Type: application/x-www-form-urlencoded",
             "Host: login.eveonline.com"})
     @POST("oauth/token")
     Call<AuthToken> tokenGet(@Field("grant_type") String gt, @Field("code") String code);
 
     @FormUrlEncoded
-    @Headers({"Authorization: Basic "+ ConstStr.AUTH_BASIC,
+    @Headers({"Authorization: Basic "+ CS.AUTH_BASIC,
             "Content-Type: application/x-www-form-urlencoded",
             "Host: login.eveonline.com"})
     @POST("oauth/token")

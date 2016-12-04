@@ -4,7 +4,7 @@ package com.anex13.eveassistent;
  * Created by it.zavod on 27.11.2016.
  */
 
-public class ConstStr {
+public class CS {
     //img server routes
     public static final String BASE_URL_IMG = "https://imageserver.eveonline.com/";
     public static final String ALI_URL_IMG = "Alliance/{allianceID}_{width}.png";

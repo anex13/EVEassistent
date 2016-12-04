@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
                // calldata();
             }
         });
-        spref = getSharedPreferences(ConstStr.AUTH_PREF, MODE_PRIVATE);
+        spref = getSharedPreferences(CS.AUTH_PREF, MODE_PRIVATE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        barer = "Bearer " + spref.getString(ConstStr.AUTH_TOKEN_TAG, "");
+        barer = "Bearer " + spref.getString(CS.AUTH_TOKEN_TAG, "");
         Log.e("token from spref", barer);
     }
 

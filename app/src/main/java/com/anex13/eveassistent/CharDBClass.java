@@ -152,7 +152,9 @@ public class CharDBClass {
         bundle.putLong(ContentProvider.CHAR_SHIP_ITEM_ID,shipItemID);
         return bundle;
     }
-
+    public int getId() {
+        return id;
+    }
     public String getAccesToken() {
         return accesToken;
     }
