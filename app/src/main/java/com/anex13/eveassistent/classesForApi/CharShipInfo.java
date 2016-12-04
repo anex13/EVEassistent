@@ -14,6 +14,7 @@ public class CharShipInfo {
     private Integer shipTypeId;
     @SerializedName("ship_item_id")
     @Expose
+    private Long shipItemId;
     @SerializedName("ship_name")
     @Expose
     private String shipName;
@@ -41,6 +42,7 @@ public class CharShipInfo {
      * @return
      * The shipItemId
      */
+    public Long getShipItemId() {
         return shipItemId;
     }
 
@@ -49,6 +51,7 @@ public class CharShipInfo {
      * @param shipItemId
      * The ship_item_id
      */
+    public void setShipItemId(Long shipItemId) {
         this.shipItemId = shipItemId;
     }
 

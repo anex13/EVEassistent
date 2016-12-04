@@ -4,28 +4,22 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
 import com.anex13.eveassistent.api.AuthService;
-import com.anex13.eveassistent.api.GetData;
+import com.anex13.eveassistent.api.GetDataESI;
 import com.anex13.eveassistent.classesForApi.AuthToken;
 import com.anex13.eveassistent.classesForApi.CharID;
 import com.anex13.eveassistent.classesForApi.CharPublicData;
+import com.anex13.eveassistent.classesForApi.CharShipInfo;
+import com.anex13.eveassistent.classesForApi.CorpInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Map;
-
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.POST;
 
 /**
  * Created by it.zavod on 22.11.2016.
@@ -33,8 +27,6 @@ import retrofit2.http.POST;
 
 public class HttpService extends IntentService {
     private static final String ACTION_CREATE_NEW_CHAR = "create char and add to db";
-    private static final String ACTION_REFRESH_TOKENS = "refresh tokens";
-    private static final String ACTION_GET_CHAR_DATA = "get char initial data";
 
     public HttpService() {
         super("httpservice");
@@ -48,13 +40,35 @@ public class HttpService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         switch (intent.getAction()) {
             case ACTION_CREATE_NEW_CHAR: {
-                String code =intent.getStringExtra(ContentProvider.CHAR_ACS_CODE);
+                String code = intent.getStringExtra(ConstStr.AUTH_CODE_TAG);
                 AuthToken token = getTokens(code);
-                CharID id =validate(token.getAccessToken());
+                CharID id = validate(token.getAccessToken());
                 CharPublicData charData = getPublicData(id.getCharacterID());
-                String accstoken =token.getAccessToken();
-
-
+                CharShipInfo ship = getCharShipInfo(token.getAccessToken(), id.getCharacterID());
+                CorpInfo corp = getCorpInfo(charData.getCorporationId());
+                final CharDBClass newchar = new CharDBClass(
+                        token.getAccessToken(),
+                        token.getRefreshToken(),
+                        id.getCharacterID(),
+                        id.getCharacterName(),
+                        charData.getGender(),
+                        charData.getBirthday(),
+                        charData.getRaceId(),
+                        charData.getDescription(),
+                        charData.getCorporationId(),
+                        corp.getCorporationName(),
+                        corp.getMemberCount(),
+                        corp.getTicker(),
+                        ship.getShipName(),
+                        ship.getShipTypeId(),
+                        ship.getShipItemId());
+                Log.i("created char",newchar.toString());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainContext.getContentResolver().insert(ContentProvider.CHARS_CONTENT_URI, newchar.toContentValues());
+                    }
+                }).start();
 
             }
             break;
@@ -63,7 +77,8 @@ public class HttpService extends IntentService {
                 break;
         }
     }
-// внутренние
+
+    // внутренние
     private static void updateToken(String accessToken, String refreshToken) {
     }                  //writ tokens to db  //todo переделать в бд
 
@@ -72,7 +87,7 @@ public class HttpService extends IntentService {
         Gson gson = new GsonBuilder()
                 .setLenient().create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://login.eveonline.com/")
+                .baseUrl(ConstStr.BASE_URL_AUTH)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         AuthService service = retrofit.create(AuthService.class);
@@ -88,14 +103,15 @@ public class HttpService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    return null;}                                       //exchange acces code for tokens  //todo переделать в бд
+        return null;
+    }                                       //exchange acces code for tokens  //todo переделать в бд
 
     @Nullable
-    private static AuthToken refreshTokens(String refreshToken,int charID) {
+    public static AuthToken refreshTokens(String refreshToken, int charID) {
         Gson gson = new GsonBuilder()
                 .setLenient().create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://login.eveonline.com/")
+                .baseUrl(ConstStr.BASE_URL_AUTH)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         AuthService service = retrofit.create(AuthService.class);
@@ -117,20 +133,21 @@ public class HttpService extends IntentService {
             e.printStackTrace();
         }
 
-return null;
+        return null;
     }                    //refresh tokens   //todo переделать в бд
 
     @Nullable
     private static CharID validate(String accsToken) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://login.eveonline.com/")
+                .baseUrl(ConstStr.BASE_URL_AUTH)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         AuthService service = retrofit.create(AuthService.class);
-        String barer = "Bearer " + spref.getString(ConstStr.AUTH_TOKEN_TAG, "");
+        String barer = "Bearer " + accsToken;
         Call<CharID> character = service.getID(barer);
         try {
-            Response<CharID> resp = character.execute();;
+            Response<CharID> resp = character.execute();
+            ;
             return resp.body();
         } catch (IOException e) {
             e.printStackTrace();
@@ -141,10 +158,10 @@ return null;
     @Nullable
     private static CharPublicData getPublicData(int charID) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://login.eveonline.com/")
+                .baseUrl(ConstStr.BASE_URL_ESI)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        GetData service = retrofit.create(GetData.class);
+        GetDataESI service = retrofit.create(GetDataESI.class);
         String barer = "Bearer " + spref.getString(ConstStr.AUTH_TOKEN_TAG, "");
         Call<CharPublicData> character = service.getPublicData(charID);
         try {
@@ -157,22 +174,66 @@ return null;
         return null;
     }                                   //get char public data for charID
 
+    @Nullable
+    private static CharShipInfo getCharShipInfo(String token, int charID) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ConstStr.BASE_URL_ESI)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetDataESI service = retrofit.create(GetDataESI.class);
+        String barer = "Bearer " + token;
+        Call<CharShipInfo> character = service.getCharShipInfo(charID, barer);
+        try {
+            Response<CharShipInfo> resp = character.execute();
+            if (resp.isSuccessful())
+                return resp.body();
+            else refreshTokens(getTokensFromDB(charID), charID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    @Nullable
+    private static CorpInfo getCorpInfo(int corpID) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ConstStr.BASE_URL_ESI)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetDataESI service = retrofit.create(GetDataESI.class);
+        Call<CorpInfo> character = service.getCorpInfo(corpID);
+        try {
+            Response<CorpInfo> resp = character.execute();
+            if (resp.isSuccessful())
+                return resp.body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String getTokensFromDB(int charID) {
+        return "token";  //todo get token fromdb for char id
+    }
+
+
 //вызовы
 
-    public static void charCreateNew (Context context,String authcode ) {
+    public static void charCreateNew(Context context, String authcode) {
         mainContext = context;
         spref = context.getSharedPreferences(ConstStr.AUTH_PREF, MODE_PRIVATE);
         Intent newChar = new Intent(context, HttpService.class);
         newChar.setAction(ACTION_CREATE_NEW_CHAR);
-        newChar.putExtra(ContentProvider.CHAR_ACS_CODE,authcode);
+        newChar.putExtra(ConstStr.AUTH_CODE_TAG, authcode);
         context.startService(newChar);
     }
 
 
-
-
-// default methods
+    // default methods
     public void onDestroy() {
         super.onDestroy();
     }
+
+
 }
