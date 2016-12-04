@@ -9,8 +9,8 @@ import android.os.Bundle;
  */
 
 public class CharDBClass {
+    int id;
     String accesToken;
-    String accesCode;
     String refreshToken;
     int charID;
     String charName;
@@ -18,20 +18,31 @@ public class CharDBClass {
     String birthday;
     int race;
     String raceStr;
-    int secStatus;
     String description;
     int corpID;
     String corpName;
     int corpMembers;
-    String corpLogoUrl;
     String corpTiker;
     String shipName;
     int shipid;
-    int shipItemID;
+    long shipItemID;
 
-    public CharDBClass(String accesToken, String accesCode, String refreshToken, int charID, String charName, String gender, String birthday, int race, int secStatus, String description, int corpID, String corpName, int corpMembers, String corpLogoUrl, String corpTiker, String shipName, int shipid, int shipItemID) {
+    public CharDBClass(String accesToken,
+                       String refreshToken,
+                       int charID,
+                       String charName,
+                       String gender,
+                       String birthday,
+                       int race,
+                       String description,
+                       int corpID,
+                       String corpName,
+                       int corpMembers,
+                       String corpTiker,
+                       String shipName,
+                       int shipid,
+                       long shipItemID) {
         this.accesToken = accesToken;
-        this.accesCode = accesCode;
         this.refreshToken = refreshToken;
         this.charID = charID;
         this.charName = charName;
@@ -52,12 +63,10 @@ public class CharDBClass {
                 raceStr = "race4";
                 break;
         }
-        this.secStatus = secStatus;
         this.description = description;
         this.corpID = corpID;
         this.corpName = corpName;
         this.corpMembers = corpMembers;
-        this.corpLogoUrl = corpLogoUrl;
         this.corpTiker = corpTiker;
         this.shipName = shipName;
         this.shipid = shipid;
@@ -66,7 +75,6 @@ public class CharDBClass {
 
     public CharDBClass(Cursor cursor) {
         this.accesToken = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_ACS_TOKEN));
-        this.accesCode = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_ACS_CODE));
         this.refreshToken = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_REFRESH_TOKEN));
         this.charID = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_CREST_ID));
         this.charName = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_NAME));
@@ -74,21 +82,18 @@ public class CharDBClass {
         this.birthday = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_BIRTHDAY));
         this.race = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_RACE_INT));
         this.raceStr = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_RACE_STR));
-        this.secStatus = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_SEC_STATUS));
         this.description = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_DESCRIPTION));
         this.corpID = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_CORP_ID));
         this.corpName = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_CORP_NAME));
         this.corpMembers = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_CORP_MEMBERS));
-        this.corpLogoUrl = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_CORP_LOGO));
         this.corpTiker = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_CORP_TIKER));
         this.shipName = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_SHIP_NAME));
         this.shipid = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_SHIP_ID));
-        this.shipItemID = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_SHIP_ITEM_ID));
+        this.shipItemID = cursor.getLong(cursor.getColumnIndex(ContentProvider.CHAR_SHIP_ITEM_ID));
     }
 
     public CharDBClass(Bundle bundle) {
         this.accesToken = bundle.getString(ContentProvider.CHAR_ACS_TOKEN);
-        this.accesCode = bundle.getString(ContentProvider.CHAR_ACS_CODE);
         this.refreshToken = bundle.getString(ContentProvider.CHAR_REFRESH_TOKEN);
         this.charID = bundle.getInt(ContentProvider.CHAR_CREST_ID);
         this.charName = bundle.getString(ContentProvider.CHAR_NAME);
@@ -96,22 +101,19 @@ public class CharDBClass {
         this.birthday = bundle.getString(ContentProvider.CHAR_BIRTHDAY);
         this.race = bundle.getInt(ContentProvider.CHAR_RACE_INT);
         this.raceStr = bundle.getString(ContentProvider.CHAR_RACE_STR);
-        this.secStatus = bundle.getInt(ContentProvider.CHAR_SEC_STATUS);
         this.description = bundle.getString(ContentProvider.CHAR_DESCRIPTION);
         this.corpID = bundle.getInt(ContentProvider.CHAR_CORP_ID);
         this.corpName = bundle.getString(ContentProvider.CHAR_CORP_NAME);
         this.corpMembers = bundle.getInt(ContentProvider.CHAR_CORP_MEMBERS);
-        this.corpLogoUrl = bundle.getString(ContentProvider.CHAR_CORP_LOGO);
         this.corpTiker = bundle.getString(ContentProvider.CHAR_CORP_TIKER);
         this.shipName = bundle.getString(ContentProvider.CHAR_SHIP_NAME);
         this.shipid = bundle.getInt(ContentProvider.CHAR_SHIP_ID);
-        this.shipItemID = bundle.getInt(ContentProvider.CHAR_SHIP_ITEM_ID);
+        this.shipItemID = bundle.getLong(ContentProvider.CHAR_SHIP_ITEM_ID);
     }
 
     public ContentValues toContentValues() {
         ContentValues cv = new ContentValues();
         cv.put(ContentProvider.CHAR_ACS_TOKEN,accesToken);
-        cv.put(ContentProvider.CHAR_ACS_CODE,accesCode);
         cv.put(ContentProvider.CHAR_REFRESH_TOKEN,refreshToken);
         cv.put(ContentProvider.CHAR_CREST_ID,charID);
         cv.put(ContentProvider.CHAR_NAME,charName);
@@ -119,12 +121,10 @@ public class CharDBClass {
         cv.put(ContentProvider.CHAR_BIRTHDAY,birthday);
         cv.put(ContentProvider.CHAR_RACE_INT,race);
         cv.put(ContentProvider.CHAR_RACE_STR,raceStr);
-        cv.put(ContentProvider.CHAR_SEC_STATUS,secStatus);
         cv.put(ContentProvider.CHAR_DESCRIPTION,description);
         cv.put(ContentProvider.CHAR_CORP_ID,corpID);
         cv.put(ContentProvider.CHAR_CORP_NAME,corpName);
         cv.put(ContentProvider.CHAR_CORP_MEMBERS,corpMembers);
-        cv.put(ContentProvider.CHAR_CORP_LOGO,corpLogoUrl);
         cv.put(ContentProvider.CHAR_CORP_TIKER,corpTiker);
         cv.put(ContentProvider.CHAR_SHIP_NAME,shipName);
         cv.put(ContentProvider.CHAR_SHIP_ID,shipid);
@@ -135,7 +135,6 @@ public class CharDBClass {
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
         bundle.putString(ContentProvider.CHAR_ACS_TOKEN,accesToken);
-        bundle.putString(ContentProvider.CHAR_ACS_CODE,accesCode);
         bundle.putString(ContentProvider.CHAR_REFRESH_TOKEN,refreshToken);
         bundle.putInt(ContentProvider.CHAR_CREST_ID,charID);
         bundle.putString(ContentProvider.CHAR_NAME,charName);
@@ -143,16 +142,14 @@ public class CharDBClass {
         bundle.putString(ContentProvider.CHAR_BIRTHDAY,birthday);
         bundle.putInt(ContentProvider.CHAR_RACE_INT,race);
         bundle.putString(ContentProvider.CHAR_RACE_STR,raceStr);
-        bundle.putInt(ContentProvider.CHAR_SEC_STATUS,secStatus);
         bundle.putString(ContentProvider.CHAR_DESCRIPTION,description);
         bundle.putInt(ContentProvider.CHAR_CORP_ID,corpID);
         bundle.putString(ContentProvider.CHAR_CORP_NAME,corpName);
         bundle.putInt(ContentProvider.CHAR_CORP_MEMBERS,corpMembers);
-        bundle.putString(ContentProvider.CHAR_CORP_LOGO,corpLogoUrl);
         bundle.putString(ContentProvider.CHAR_CORP_TIKER,corpTiker);
         bundle.putString(ContentProvider.CHAR_SHIP_NAME,shipName);
         bundle.putInt(ContentProvider.CHAR_SHIP_ID,shipid);
-        bundle.putInt(ContentProvider.CHAR_SHIP_ITEM_ID,shipItemID);
+        bundle.putLong(ContentProvider.CHAR_SHIP_ITEM_ID,shipItemID);
         return bundle;
     }
 
@@ -164,13 +161,6 @@ public class CharDBClass {
         this.accesToken = accesToken;
     }
 
-    public String getAccesCode() {
-        return accesCode;
-    }
-
-    public void setAccesCode(String accesCode) {
-        this.accesCode = accesCode;
-    }
 
     public String getRefreshToken() {
         return refreshToken;
@@ -228,14 +218,6 @@ public class CharDBClass {
         this.raceStr = raceStr;
     }
 
-    public int getSecStatus() {
-        return secStatus;
-    }
-
-    public void setSecStatus(int secStatus) {
-        this.secStatus = secStatus;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -268,14 +250,6 @@ public class CharDBClass {
         this.corpMembers = corpMembers;
     }
 
-    public String getCorpLogoUrl() {
-        return corpLogoUrl;
-    }
-
-    public void setCorpLogoUrl(String corpLogoUrl) {
-        this.corpLogoUrl = corpLogoUrl;
-    }
-
     public String getCorpTiker() {
         return corpTiker;
     }
@@ -300,13 +274,17 @@ public class CharDBClass {
         this.shipid = shipid;
     }
 
-    public int getShipItemID() {
+    public long getShipItemID() {
         return shipItemID;
     }
 
-    public void setShipItemID(int shipItemID) {
+    public void setShipItemID(long shipItemID) {
         this.shipItemID = shipItemID;
     }
 
+    @Override
+public String toString(){
+    return charName+"  "+corpName;
+}
 
 }

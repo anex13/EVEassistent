@@ -33,6 +33,10 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
             }
         });
         getLoaderManager().initLoader(123,null,this);
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            getWindow().setStatusBarColor(0x000000);
+        }
+
 
 
     }
@@ -65,6 +69,9 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
     @Override
     public void onResume() {
         super.onResume();
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            getWindow().setStatusBarColor(0x000000);
+        }
         intent = getIntent();
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             HttpService.charCreateNew(getApplicationContext(), getAuthCode(intent));

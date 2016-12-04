@@ -24,7 +24,6 @@ public class ContentProvider extends android.content.ContentProvider {
     // Поля
     static final String CHAR_ID = "_id";
     static final String CHAR_ACS_TOKEN = "acstoken";
-    static final String CHAR_ACS_CODE = "acscode";
     static final String CHAR_REFRESH_TOKEN = "refreshtoken";
     static final String CHAR_CREST_ID = "charid";
     static final String CHAR_NAME = "charname";
@@ -32,12 +31,10 @@ public class ContentProvider extends android.content.ContentProvider {
     static final String CHAR_BIRTHDAY = "birthday";
     static final String CHAR_RACE_INT = "raceint";
     static final String CHAR_RACE_STR = "racestring";
-    static final String CHAR_SEC_STATUS = "securitystatus";
     static final String CHAR_DESCRIPTION = "desription";
     static final String CHAR_CORP_ID = "corpid";
     static final String CHAR_CORP_NAME = "charcorpname";
     static final String CHAR_CORP_MEMBERS = "memberscount";
-    static final String CHAR_CORP_LOGO = "corplogo";
     static final String CHAR_CORP_TIKER = "tiker";
     static final String CHAR_SHIP_NAME = "shipname";
     static final String CHAR_SHIP_ID = "shipid";
@@ -48,7 +45,6 @@ public class ContentProvider extends android.content.ContentProvider {
     static final String DB_CREATE = "create table " + CHAR_TABLE + "("
             + CHAR_ID + " integer primary key autoincrement, "
             + CHAR_ACS_TOKEN + " text,"
-            + CHAR_ACS_CODE + " text,"
             + CHAR_REFRESH_TOKEN + " text,"
             + CHAR_CREST_ID + " integer, "
             + CHAR_NAME + " text,"
@@ -56,12 +52,10 @@ public class ContentProvider extends android.content.ContentProvider {
             + CHAR_BIRTHDAY + " text,"
             + CHAR_RACE_INT + " integer,"
             + CHAR_RACE_STR + " text,"
-            + CHAR_SEC_STATUS + " integer,"
             + CHAR_DESCRIPTION + " text,"
             + CHAR_CORP_ID + " integer,"
             + CHAR_CORP_NAME + " text,"
             + CHAR_CORP_MEMBERS + " integer,"
-            + CHAR_CORP_LOGO + " text,"
             + CHAR_CORP_TIKER + " text,"
             + CHAR_SHIP_NAME + " text,"
             + CHAR_SHIP_ID + " integer,"
@@ -82,11 +76,11 @@ public class ContentProvider extends android.content.ContentProvider {
 
     // Типы данных
     // набор строк
-    static final String SERVERS_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
+    static final String CHARS_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
             + AUTHORITY + "." + CHAR_PATH;
 
     // одна строка
-    static final String SERVERS_CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."
+    static final String CHARS_CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."
             + AUTHORITY + "." + CHAR_PATH;
 
     //// UriMatcher
@@ -206,9 +200,9 @@ public class ContentProvider extends android.content.ContentProvider {
     public String getType(Uri uri) {
         switch (uriMatcher.match(uri)) {
             case URI_CHARS:
-                return SERVERS_CONTENT_TYPE;
+                return CHARS_CONTENT_TYPE;
             case URI_CHARS_ID:
-                return SERVERS_CONTENT_ITEM_TYPE;
+                return CHARS_CONTENT_ITEM_TYPE;
         }
         return null;
     }

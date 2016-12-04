@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //start sign in
-                refreshToken();
             }
         });
         final Button getData = (Button) findViewById(R.id.button2);
@@ -139,36 +137,6 @@ public class MainActivity extends AppCompatActivity
         Log.e("token from spref", barer);
     }
 
-   /* public void calldata() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://crest-tq.eveonline.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        GetData service = retrofit.create(GetData.class);
-        String barer1 = "Bearer " + spref.getString(ConstStr.AUTH_TOKEN_TAG, "");
-        String path = Integer.toString(spref.getInt(PREF_ID_TAG, 0));
-        Call<CurentPosition<SolarSystem>> character = service.getData(barer1, path);
-        character.enqueue(new Callback<CurentPosition<SolarSystem>>() {
-            @Override
-            public void onResponse(Call<CurentPosition<SolarSystem>> call, Response<CurentPosition<SolarSystem>> response) {
-                if (!response.isSuccessful()) {
 
-                    Log.e("token", "resp not succes");
-                    Log.e("token", response.message());
-                    Log.e("token", response.raw().toString());
-                }
-                if (response.isSuccessful()) {
-                    Log.e("curent loc", response.toString());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CurentPosition<SolarSystem>> call, Throwable t) {
-
-                Log.e("get token fail", "FAIL");
-                Log.e("fail", t.getMessage());
-            }
-        });
-    }*/
 }
 // TODO: 29.11.2016 ss
