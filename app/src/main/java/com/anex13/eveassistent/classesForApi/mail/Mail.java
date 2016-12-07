@@ -10,9 +10,9 @@ import java.util.List;
 
 public class Mail {
 
-    @SerializedName("recipients")
-    @Expose
-    private List<Recipient> recipient = null;
+   // @SerializedName("recipients")
+   // @Expose
+   // private List<Recipient> recipient = null;
     @SerializedName("subject")
     @Expose
     private String subject;

@@ -37,7 +37,7 @@ public class CS {
     public static final String LOGIN_CLIENT_ID = "client_id=0f31362760c94c9f9280dd29347e9c24&";
     public static final String LOGIN_STATE = "state=trustmeiamingener";
     public static final String LOGIN_SCOPES = "scope="
-            + "characterAccountRead " //Read your account subscription status.
+            /*+ "characterAccountRead " //Read your account subscription status.
             + "characterAssetsRead "  //Read your asset list.
             + "characterBookmarksRead "  //List your bookmarks and their coordinates.
             + "characterCalendarRead "   //Read your calendar events and attendees.
@@ -77,7 +77,7 @@ public class CS {
             + "corporationStructuresRead "  //  List your corporation's structures, outposts, and starbases.
             + "corporationWalletRead "  //  Read your corporation's wallet status, transaction, and journal history.
             + "fleetRead "  //  Allows real time reading of your fleet information (members, ship types, etc.) if you're the boss of the fleet.
-            + "fleetWrite "  // Allows the ability to invite, kick, and update fleet information if you're the boss of the fleet.
+            + "fleetWrite "  // Allows the ability to invite, kick, and update fleet information if you're the boss of the fleet.*/
             + "esi-assets.read_assets.v1 "  //  Allows reading a list of assets that the character owns
             + "esi-calendar.read_calendar_events.v1 "  //  Allows reading a character's calendar, including corporation events
             + "esi-bookmarks.read_character_bookmarks.v1 "  //  Allows reading of a character's bookmarks and bookmark folders
@@ -91,10 +91,10 @@ public class CS {
             + "esi-skills.read_skillqueue.v1 "  //  Allows reading of a character's currently training skill queue.
             + "esi-skills.read_skills.v1 "  //  Allows reading of a character's currently known skills.
             + "esi-universe.read_structures.v1 "  //  Allows querying the location and type of structures that the character has docking access at.
-            + "remoteClientUI "  //  Allows applications to control the UI of your EVE Online client.
+            //+ "remoteClientUI "  //  Allows applications to control the UI of your EVE Online client.
             + "esi-calendar.respond_calendar_events.v1 "  //  Allows updating of a character's calendar event responses
-            + "esi-search.search_structures.v1 "  //  Allows searching over all structures that a character can see in the structure browser.
-            + "structureVulnUpdate" //  Allows updating your structures' vulnerability timers
+            + "esi-search.search_structures.v1"  //  Allows searching over all structures that a character can see in the structure browser.
+            //+ "structureVulnUpdate" //  Allows updating your structures' vulnerability timers
             + "&";
     public static final String CHAR_NAME ="char name" ;
     public static final String CHAR_ID = "car id ";

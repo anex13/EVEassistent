@@ -9,9 +9,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class MailHeaders {
-    @SerializedName("recipients")
-    @Expose
-    private List<Recipient> recipients = null;
+    //@SerializedName("recipients")
+    //@Expose
+    //private List<Recipient> recipients = null;
     @SerializedName("is_read")
     @Expose
     private Boolean isRead;
@@ -27,9 +27,9 @@ public class MailHeaders {
     @SerializedName("from")
     @Expose
     private Integer from;
-    @SerializedName("labels")
-    @Expose
-    private List<Integer> labels = null;
+   // @SerializedName("labels")
+   // @Expose
+   // private List<Integer> labels = null;
 
     /**
      *
@@ -122,22 +122,22 @@ public class MailHeaders {
         this.from = from;
     }
 
-    /**
+    /*
      *
      * @return
      * The labels
      */
-    public List<Integer> getLabels() {
-        return labels;
-    }
+    //public List<Integer> getLabels() {
+    //    return labels;
+   // }
 
-    /**
+    /*
      *
      * @param labels
      * The labels
      */
-    public void setLabels(List<Integer> labels) {
-        this.labels = labels;
-    }
+   // public void setLabels(List<Integer> labels) {
+   //     this.labels = labels;
+   // }
 
 }

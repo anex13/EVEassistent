@@ -20,7 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 public class CharManage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int MENU_DEL_CHAR =1 ;
+    private static final int MENU_DEL_CHAR = 1;
     Intent intent;
     SharedPreferences spref;
     ListView lv;
@@ -40,11 +40,10 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
                 charAddStart();
             }
         });
-        getLoaderManager().initLoader(123,null,this);
+        getLoaderManager().initLoader(123, null, this);
         if (android.os.Build.VERSION.SDK_INT >= 21) {
             getWindow().setStatusBarColor(0x000000);
         }
-
 
 
     }
@@ -132,4 +131,9 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent tomainactivity = new Intent(this, MainActivity.class);
+        startActivity(tomainactivity);
+    }
 }

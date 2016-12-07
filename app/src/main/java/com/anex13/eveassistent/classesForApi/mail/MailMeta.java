@@ -10,30 +10,30 @@ import java.util.List;
 
 public class MailMeta {
 
-    @SerializedName("labels")
-    @Expose
-    private List<Integer> labels = null;
+   // @SerializedName("labels")
+  //  @Expose
+   // private List<Integer> labels = null;
     @SerializedName("read")
     @Expose
     private Boolean read;
 
-    /**
+    /*
      *
      * @return
      * The labels
      */
-    public List<Integer> getLabels() {
-        return labels;
-    }
+  //  public List<Integer> getLabels() {
+   //     return labels;
+  //  }
 
-    /**
+    /*
      *
      * @param labels
      * The labels
      */
-    public void setLabels(List<Integer> labels) {
-        this.labels = labels;
-    }
+  //  public void setLabels(List<Integer> labels) {
+  //      this.labels = labels;
+ //   }
 
     /**
      *

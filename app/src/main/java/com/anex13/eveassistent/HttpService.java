@@ -4,8 +4,10 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
 import com.anex13.eveassistent.api.AuthService;
 import com.anex13.eveassistent.api.GetDataESI;
 import com.anex13.eveassistent.classesForApi.AuthToken;
@@ -15,7 +17,10 @@ import com.anex13.eveassistent.classesForApi.CharShipInfo;
 import com.anex13.eveassistent.classesForApi.CorpInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -27,6 +32,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HttpService extends IntentService {
     private static final String ACTION_CREATE_NEW_CHAR = "create char and add to db";
+    private static final String ACTION_GET_MAIL = "get mail action";
+    private static final String MAIL_CHAR_ID = "char id for getmail";
 
     public HttpService() {
         super("httpservice");
@@ -62,7 +69,7 @@ public class HttpService extends IntentService {
                         ship.getShipName(),
                         ship.getShipTypeId(),
                         ship.getShipItemId());
-                Log.i("created char",newchar.toString());
+                Log.i("created char", newchar.toString());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -73,15 +80,18 @@ public class HttpService extends IntentService {
             }
             break;
 
+            case ACTION_GET_MAIL: {
+                int id = intent.getIntExtra(MAIL_CHAR_ID, 0);
+                CharDBClass char1 = getCharfrfomdb(id);
+                tryToken(char1.getCharID(), char1.getAccesToken());
+                updateMailList(char1.getCharID(), char1.getAccesToken());
+            }
             default:
                 break;
         }
     }
 
-    // внутренние
-    private static void updateToken(String accessToken, String refreshToken) {
-    }                  //writ tokens to db  //todo переделать в бд
-
+    //auth srv
     @Nullable
     private static AuthToken getTokens(String authcode) {
         Gson gson = new GsonBuilder()
@@ -96,6 +106,7 @@ public class HttpService extends IntentService {
             Response<AuthToken> resp = token.execute();
             if (resp.isSuccessful()) {
                 return resp.body();
+
             } else {
                 Log.e("token", resp.message());
                 Log.e("token", resp.raw().toString());
@@ -115,12 +126,7 @@ public class HttpService extends IntentService {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         AuthService service = retrofit.create(AuthService.class);
-        String oldToken = spref.getString(CS.AUTH_REFRESH_TOKEN_TAG, "");
-        Log.i("old token", spref.getString(CS.AUTH_TOKEN_TAG, ""));
-        Log.i("code", spref.getString(CS.AUTH_CODE_TAG, ""));
-        Log.i("ref", spref.getString(CS.AUTH_REFRESH_TOKEN_TAG, ""));
-
-        Call<AuthToken> newToken = service.tokenRefresh("refresh_token", oldToken);
+        Call<AuthToken> newToken = service.tokenRefresh("refresh_token", refreshToken);
         try {
             Response<AuthToken> resp = newToken.execute();
             if (resp.isSuccessful()) {
@@ -147,14 +153,19 @@ public class HttpService extends IntentService {
         Call<CharID> character = service.getID(barer);
         try {
             Response<CharID> resp = character.execute();
-            ;
-            return resp.body();
+            if (resp.isSuccessful())
+                return resp.body();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }                                          //get id and char name for token  //todo переделать в бд
 
+    public static void tryToken(int charID, String acsToken) {
+        getCharShipInfo(acsToken, charID);
+    }
+
+    //public data without token
     @Nullable
     private static CharPublicData getPublicData(int charID) {
         Retrofit retrofit = new Retrofit.Builder()
@@ -175,27 +186,6 @@ public class HttpService extends IntentService {
     }                                   //get char public data for charID
 
     @Nullable
-    private static CharShipInfo getCharShipInfo(String token, int charID) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(CS.BASE_URL_ESI)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        GetDataESI service = retrofit.create(GetDataESI.class);
-        String barer = "Bearer " + token;
-        Call<CharShipInfo> character = service.getCharShipInfo(charID, barer);
-        try {
-            Response<CharShipInfo> resp = character.execute();
-            if (resp.isSuccessful())
-                return resp.body();
-            else refreshTokens(getTokensFromDB(charID), charID);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    @Nullable
     private static CorpInfo getCorpInfo(int corpID) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(CS.BASE_URL_ESI)
@@ -213,8 +203,73 @@ public class HttpService extends IntentService {
         return null;
     }
 
-    private static String getTokensFromDB(int charID) {
-        return "token";  //todo get token fromdb for char id
+
+    //tokens needed
+    @Nullable
+    private static CharShipInfo getCharShipInfo(String token, int charID) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(CS.BASE_URL_ESI)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetDataESI service = retrofit.create(GetDataESI.class);
+        String barer = "Bearer " + token;
+        Call<CharShipInfo> character = service.getCharShipInfo(charID, barer);
+        try {
+            Response<CharShipInfo> resp = character.execute();
+            if (resp.isSuccessful())
+                return resp.body();
+            else refreshTokens(getRefrTokensFromDB(charID), charID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private static String getRefrTokensFromDB(int charID) {
+        CharDBClass char1 = getCharfrfomdb(charID);
+
+
+        return char1.getRefreshToken();  //todo get token fromdb for char id
+    }
+
+    public static CharDBClass getCharfrfomdb(int charID) {
+        String selection = ContentProvider.CHAR_CREST_ID + " == ?";
+        String[] selectionArgs = new String[]{Integer.toString(charID)};
+        Cursor c = null;
+        CharDBClass charDBitem = null;
+        try {
+            c = mainContext.getContentResolver().query(ContentProvider.CHARS_CONTENT_URI, null, selection, selectionArgs, null, null);
+            if (c != null) {
+                if (c.moveToFirst()) {
+                    do {
+
+                        charDBitem = new CharDBClass(c);
+
+
+                    } while (c.moveToNext());
+                }
+            } else {
+                Log.d("cursor", "Cursor is null");
+            }
+
+        } finally {
+            c.close();
+            Log.i("cursor", "close srvers cursr");
+        }
+        return charDBitem;
+    }
+
+
+    public static void updateMailList(int charID, String token) {
+        //get mails list
+        List<com.anex13.eveassistent.classesForApi.mail.Mail> listmails = null;
+        for (com.anex13.eveassistent.classesForApi.mail.Mail mail : listmails) {
+            //get mail body
+            //create MailDBClass
+            //write to db
+            //send broadcast finished
+        }
     }
 
 
@@ -229,6 +284,14 @@ public class HttpService extends IntentService {
         context.startService(newChar);
     }
 
+    public static void updateMail(Context context, int charID) {
+        mainContext = context;
+        spref = context.getSharedPreferences(CS.AUTH_PREF, MODE_PRIVATE);
+        Intent getMail = new Intent(context, HttpService.class);
+        getMail.setAction(ACTION_GET_MAIL);
+        getMail.putExtra(MAIL_CHAR_ID, charID);
+        context.startService(getMail);
+    }
 
     // default methods
     public void onDestroy() {

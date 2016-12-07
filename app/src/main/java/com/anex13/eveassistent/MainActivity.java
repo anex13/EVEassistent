@@ -19,10 +19,8 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final String PREF_ID_TAG = "char id";
     SharedPreferences spref;
     String barer;
-    public static final String PREF_NAME_TAG = "name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,19 +28,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Button signin = (Button) findViewById(R.id.button);
-        signin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-        final Button getData = (Button) findViewById(R.id.button2);
-        getData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               // calldata();
-            }
-        });
         spref = getSharedPreferences(CS.AUTH_PREF, MODE_PRIVATE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +60,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -102,30 +86,24 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-            Intent charactivity = new Intent(this, CharManage.class);
-            startActivity(charactivity);
-
-        } else if (id == R.id.nav_send) {
-
+        switch (id) {
+            case R.id.nav_charmanage: {
+                Intent charactivity = new Intent(this, CharManage.class);
+                startActivity(charactivity);
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+            default: {
+                Intent mailactivity = new Intent(this, MailActivity.class);
+                startActivity(mailactivity);
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    public void refreshToken() {
 
     }
 

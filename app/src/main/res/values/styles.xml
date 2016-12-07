@@ -12,7 +12,14 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
+    <style name="charman" parent="@style/AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/sitebg</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    <style name="mail" parent="@style/AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/main_background_image</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

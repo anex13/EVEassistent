@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.anex13.eveassistent">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,9 +23,10 @@
         </activity>
         <activity
             android:name=".CharManage"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/charman">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -32,11 +35,18 @@
                     android:scheme="anexevetest" />
             </intent-filter>
         </activity>
+
         <service android:name=".HttpService" />
+
         <provider
             android:name=".ContentProvider"
-            android:authorities="com.anex13.providers.ContentProvider">
-        </provider>
+            android:authorities="com.anex13.providers.ContentProvider" />
+
+        <activity
+            android:name=".MailActivity"
+            android:label="@string/title_activity_mail"
+            android:theme="@style/mail" />
+        <activity android:name=".NewMailActivity"></activity>
     </application>
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+
 </manifest>
