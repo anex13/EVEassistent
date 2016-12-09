@@ -1,4 +1,4 @@
-package com.anex13.eveassistent;
+package com.anex13.eveassistent.dbAdapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.anex13.eveassistent.CS;
+import com.anex13.eveassistent.CharDBClass;
+import com.anex13.eveassistent.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -38,6 +41,7 @@ public class CharAdapter extends CursorAdapter {
         ((TextView) view.findViewById(R.id.char_name)).setText(character.getCharName());
         ((TextView) view.findViewById(R.id.char_corp)).setText(character.getCorpName());
         ((TextView) view.findViewById(R.id.char_birthday)).setText(character.getBirthday());
+        ((TextView) view.findViewById(R.id.adapter_char_id)).setText(Integer.toString(character.getCharID()));
         final ImageView userpic = (ImageView) view.findViewById(R.id.user_pic);
         final String userpicurl = CS.BASE_URL_IMG + CS.CHAR_URL_IMG + character.getCharID() + CS.IMG_SIZE_512 + ".jpg";
         Picasso.with(context)
@@ -98,27 +102,7 @@ public class CharAdapter extends CursorAdapter {
                 });
 
 
-        // Picasso.with(context)
-        //         .load(corppicurl)
-        //         .into(corppic);
-        // ((ImageView) view.findViewById(R.id.corp_pic)).setImageDrawable(Drawable.createFromPath(character.getCorpLogoUrl()));
-        /*switch1.setChecked(server.getAlarm()!=0);
-        switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (server.getAlarm()!=0){
-                    server.setAlarm(0);
-                    server.setState(2);}
-                else
-                    server.setAlarm(1);
-                final Uri uri = ContentUris.withAppendedId(SRVContentProvider.SERVERS_CONTENT_URI, server.getId());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mContext.getContentResolver().update(uri,server.toContentValues(),null,null);
-                    }
-                }).start();
-            }
-        });*/
+
     }
 }
+//// TODO: 07.12.2016 запилить размеры картинок в стринги по дпи

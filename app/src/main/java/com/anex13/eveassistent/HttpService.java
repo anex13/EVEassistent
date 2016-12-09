@@ -1,10 +1,12 @@
 package com.anex13.eveassistent;
 
 import android.app.IntentService;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -15,6 +17,8 @@ import com.anex13.eveassistent.classesForApi.CharID;
 import com.anex13.eveassistent.classesForApi.CharPublicData;
 import com.anex13.eveassistent.classesForApi.CharShipInfo;
 import com.anex13.eveassistent.classesForApi.CorpInfo;
+import com.anex13.eveassistent.classesForApi.mail.Mail;
+import com.anex13.eveassistent.classesForApi.mail.MailHeaders;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -73,18 +77,24 @@ public class HttpService extends IntentService {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        mainContext.getContentResolver().insert(ContentProvider.CHARS_CONTENT_URI, newchar.toContentValues());
+                        mainContext.getContentResolver().insert(DBColumns.CharTable.CONTENT_URI, newchar.toContentValues());
                     }
                 }).start();
 
-            }
-            break;
+
+            SharedPreferences.Editor editor =spref.edit();
+                editor.putInt(CS.SPREF_DEF_CHAR,id.getCharacterID());
+                editor.apply();
+            break;}
 
             case ACTION_GET_MAIL: {
                 int id = intent.getIntExtra(MAIL_CHAR_ID, 0);
                 CharDBClass char1 = getCharfrfomdb(id);
-                tryToken(char1.getCharID(), char1.getAccesToken());
-                updateMailList(char1.getCharID(), char1.getAccesToken());
+                tryToken(char1.getAccesToken(), char1.getCharID());
+                //List<MailHeaders> list =updateMailList(char1.getCharID(),char1.getAccesToken());
+                //if (list!=null)
+                getMailtoDB(updateMailList(char1.getCharID(), char1.getAccesToken()), char1.getCharID(), char1.getAccesToken());
+                // else Log.i("mail list","list is null");
             }
             default:
                 break;
@@ -118,7 +128,10 @@ public class HttpService extends IntentService {
     }                                       //exchange acces code for tokens  //todo переделать в бд
 
     @Nullable
-    public static AuthToken refreshTokens(String refreshToken, int charID) {
+    public static void refreshTokens(int charID, final Context context) {
+        final Uri uri = ContentUris.withAppendedId(DBColumns.CharTable.CONTENT_URI, charID);
+        final CharDBClass pers = getCharfrfomdb(charID);
+        String refreshToken = pers.getRefreshToken();
         Gson gson = new GsonBuilder()
                 .setLenient().create();
         Retrofit retrofit = new Retrofit.Builder()
@@ -128,9 +141,16 @@ public class HttpService extends IntentService {
         AuthService service = retrofit.create(AuthService.class);
         Call<AuthToken> newToken = service.tokenRefresh("refresh_token", refreshToken);
         try {
-            Response<AuthToken> resp = newToken.execute();
+            final Response<AuthToken> resp = newToken.execute();
             if (resp.isSuccessful()) {
-                return resp.body();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pers.setAccesToken(resp.body().getAccessToken());
+                        pers.setRefreshToken(resp.body().getRefreshToken());
+                        context.getContentResolver().update(uri, pers.toContentValues(), null, null);
+                    }
+                }).start();
             } else {
                 Log.e("token", resp.message());
                 Log.e("token", resp.raw().toString());
@@ -139,7 +159,6 @@ public class HttpService extends IntentService {
             e.printStackTrace();
         }
 
-        return null;
     }                    //refresh tokens   //todo переделать в бд
 
     @Nullable
@@ -161,11 +180,13 @@ public class HttpService extends IntentService {
         return null;
     }                                          //get id and char name for token  //todo переделать в бд
 
-    public static void tryToken(int charID, String acsToken) {
+    public static void tryToken(String acsToken, int charID) {
         getCharShipInfo(acsToken, charID);
     }
 
     //public data without token
+
+
     @Nullable
     private static CharPublicData getPublicData(int charID) {
         Retrofit retrofit = new Retrofit.Builder()
@@ -218,28 +239,20 @@ public class HttpService extends IntentService {
             Response<CharShipInfo> resp = character.execute();
             if (resp.isSuccessful())
                 return resp.body();
-            else refreshTokens(getRefrTokensFromDB(charID), charID);
+            else refreshTokens(charID, mainContext);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-
-    private static String getRefrTokensFromDB(int charID) {
-        CharDBClass char1 = getCharfrfomdb(charID);
-
-
-        return char1.getRefreshToken();  //todo get token fromdb for char id
-    }
-
     public static CharDBClass getCharfrfomdb(int charID) {
-        String selection = ContentProvider.CHAR_CREST_ID + " == ?";
+        String selection = DBColumns.CharTable.CHAR_CREST_ID + " == ?";
         String[] selectionArgs = new String[]{Integer.toString(charID)};
         Cursor c = null;
         CharDBClass charDBitem = null;
         try {
-            c = mainContext.getContentResolver().query(ContentProvider.CHARS_CONTENT_URI, null, selection, selectionArgs, null, null);
+            c = mainContext.getContentResolver().query(DBColumns.CharTable.CONTENT_URI, null, selection, selectionArgs, null, null);
             if (c != null) {
                 if (c.moveToFirst()) {
                     do {
@@ -255,20 +268,56 @@ public class HttpService extends IntentService {
 
         } finally {
             c.close();
-            Log.i("cursor", "close srvers cursr");
+            Log.i("cursor", "close cursr");
         }
         return charDBitem;
     }
 
+    @Nullable
+    public static List<MailHeaders> updateMailList(int charID, String accsToken) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(CS.BASE_URL_ESI)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetDataESI service = retrofit.create(GetDataESI.class);
+        Call<List<MailHeaders>> mails = service.getMailHeaders(charID, ("Bearer " + accsToken));
+        try {
+            Response<List<MailHeaders>> resp = mails.execute();
+            if (resp.isSuccessful())
+                return resp.body();
+            else {
+                Log.e("mailList",resp.raw().toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-    public static void updateMailList(int charID, String token) {
-        //get mails list
-        List<com.anex13.eveassistent.classesForApi.mail.Mail> listmails = null;
-        for (com.anex13.eveassistent.classesForApi.mail.Mail mail : listmails) {
-            //get mail body
-            //create MailDBClass
-            //write to db
-            //send broadcast finished
+    public static void getMailtoDB(List<MailHeaders> listmails, int charID, String accsToken) {
+        if (listmails==null)
+            Log.i("getMailtoDB", "entry list is empty");
+        else {
+            for (MailHeaders mail : listmails) {
+                MailDBClass mailfull = null;
+                Retrofit retrofita = new Retrofit.Builder()
+                        .baseUrl(CS.BASE_URL_ESI)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                GetDataESI servicea = retrofita.create(GetDataESI.class);
+                Call<Mail> mailbody = servicea.getMailBody(charID, mail.getMailId(), ("Barer " + accsToken));
+                try {
+                    Response<Mail> resp = mailbody.execute();
+                    if (resp.isSuccessful())
+
+                        mailfull = new MailDBClass(mail.getIsRead(), mail.getMailId(), mail.getFrom(), getPublicData(charID).getName(), mail.getSubject(), resp.body().getBody(), resp.body().getTimestamp(), charID);
+                    Log.e("MAil", "mail " + resp.body().getSubject() + "got ");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (mailfull != null)
+                    mainContext.getContentResolver().insert(DBColumns.MailTable.CONTENT_URI, mailfull.toContentValues());
+            }
         }
     }
 

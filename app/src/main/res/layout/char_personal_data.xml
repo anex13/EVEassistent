@@ -8,6 +8,18 @@
     android:background="@android:drawable/editbox_dropdown_dark_frame"
     android:id="@+id/char_l">
 
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/adapter_char_id"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="invisible"
+        android:textColor="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="@+id/user_pic"
+        app:layout_constraintRight_toRightOf="@+id/user_pic" />
+
     <ImageView
         android:layout_width="128dp"
         app:srcCompat="@drawable/c95519167_256"

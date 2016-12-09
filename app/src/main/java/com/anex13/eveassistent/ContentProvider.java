@@ -6,222 +6,263 @@ import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
+
+import com.anex13.eveassistent.DBColumns.MailTable;
+import com.anex13.eveassistent.DBColumns.CharTable;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import static com.anex13.eveassistent.DBColumns.CHAR_ID_SEL;
 
 /**
  * Created by it.zavod on 22.11.2016.
  */
 
 public class ContentProvider extends android.content.ContentProvider {
-    static final String DB_NAME = "MAIN DB";
-    static final int DB_VERSION = 1;
 
-    // Таблица
-    static final String CHAR_TABLE = "characters";
+    public static final String AUTHORITY = "com.anex13.providers.ContentProvider";
 
-    // Поля
-    static final String CHAR_ID = "_id";
-    static final String CHAR_ACS_TOKEN = "acstoken";
-    static final String CHAR_REFRESH_TOKEN = "refreshtoken";
-    static final String CHAR_CREST_ID = "charid";
-    static final String CHAR_NAME = "charname";
-    static final String CHAR_GENDER = "gender";
-    static final String CHAR_BIRTHDAY = "birthday";
-    static final String CHAR_RACE_INT = "raceint";
-    static final String CHAR_RACE_STR = "racestring";
-    static final String CHAR_DESCRIPTION = "desription";
-    static final String CHAR_CORP_ID = "corpid";
-    static final String CHAR_CORP_NAME = "charcorpname";
-    static final String CHAR_CORP_MEMBERS = "memberscount";
-    static final String CHAR_CORP_TIKER = "tiker";
-    static final String CHAR_SHIP_NAME = "shipname";
-    static final String CHAR_SHIP_ID = "shipid";
-    static final String CHAR_SHIP_ITEM_ID = "shipitemid";
-
-
-    // Скрипт создания таблицы
-    static final String DB_CREATE = "create table " + CHAR_TABLE + "("
-            + CHAR_ID + " integer primary key autoincrement, "
-            + CHAR_ACS_TOKEN + " text,"
-            + CHAR_REFRESH_TOKEN + " text,"
-            + CHAR_CREST_ID + " integer, "
-            + CHAR_NAME + " text,"
-            + CHAR_GENDER + " text,"
-            + CHAR_BIRTHDAY + " text,"
-            + CHAR_RACE_INT + " integer,"
-            + CHAR_RACE_STR + " text,"
-            + CHAR_DESCRIPTION + " text,"
-            + CHAR_CORP_ID + " integer,"
-            + CHAR_CORP_NAME + " text,"
-            + CHAR_CORP_MEMBERS + " integer,"
-            + CHAR_CORP_TIKER + " text,"
-            + CHAR_SHIP_NAME + " text,"
-            + CHAR_SHIP_ID + " integer,"
-            + CHAR_SHIP_ITEM_ID + " integer"
-            + ");";
-
-
-    // // Uri
-    // authority
-    static final String AUTHORITY = "com.anex13.providers.ContentProvider";
-
-    // path
-    static final String CHAR_PATH = "characters";
-
-    // Общий Uri
-    public static final Uri CHARS_CONTENT_URI = Uri.parse("content://"
-            + AUTHORITY + "/" + CHAR_PATH);
-
-    // Типы данных
-    // набор строк
-    static final String CHARS_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
-            + AUTHORITY + "." + CHAR_PATH;
-
-    // одна строка
-    static final String CHARS_CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."
-            + AUTHORITY + "." + CHAR_PATH;
-
-    //// UriMatcher
-    // общий Uri
     static final int URI_CHARS = 1;
-
-    // Uri с указанным ID
     static final int URI_CHARS_ID = 2;
+    static final int URI_MAILS = 3;
+    static final int URI_MAILS_ID = 4;
+    static final int URI_MAILS_CHARID=5;
 
-    // описание и создание UriMatcher
-    private static final UriMatcher uriMatcher;
-
+    private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+    public static final String TAG = ContentProvider.class.getName();
 
     static {
-        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(AUTHORITY, CHAR_PATH, URI_CHARS);
-        uriMatcher.addURI(AUTHORITY, CHAR_PATH + "/#", URI_CHARS_ID);
+
+        URI_MATCHER.addURI(AUTHORITY, CharTable.TABLE_NAME, URI_CHARS);
+        URI_MATCHER.addURI(AUTHORITY, CharTable.TABLE_NAME + "/#", URI_CHARS_ID);
+        URI_MATCHER.addURI(AUTHORITY, MailTable.TABLE_NAME, URI_MAILS);
+        URI_MATCHER.addURI(AUTHORITY, MailTable.TABLE_NAME + "/#", URI_MAILS_ID);
+        URI_MATCHER.addURI(AUTHORITY, MailTable.TABLE_NAME+CHAR_ID_SEL+"/#",URI_MAILS_CHARID);
+
     }
 
-    DBHelper dbHelper;
-    SQLiteDatabase db;
+    private SQLHelper eveSQLHelper;
 
+    public ContentProvider() {
+    }
+
+    @Override
     public boolean onCreate() {
-        dbHelper = new DBHelper(getContext());
+        eveSQLHelper = new SQLHelper(getContext());
         return true;
     }
 
-    // чтение
-    public Cursor query(Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
-
-        // проверяем Uri
-        switch (uriMatcher.match(uri)) {
-            case URI_CHARS: // общий Uri
-                // если сортировка не указана, ставим свою - по имени
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = CHAR_NAME + " ASC";
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        String table = null;
+        switch (URI_MATCHER.match(uri)) {
+            case URI_CHARS:
+                table = CharTable.TABLE_NAME;
+                break;
+            case URI_MAILS:
+                table = MailTable.TABLE_NAME;
+                break;
+            case URI_CHARS_ID:
+                table = CharTable.TABLE_NAME;
+                String cid = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    selection = CharTable.CHAR_CREST_ID + " = " + cid;
+                } else {
+                    selection = selection + " AND " + CharTable.CHAR_CREST_ID + " = " + cid;
                 }
                 break;
-            case URI_CHARS_ID: // Uri с ID
-                String id = uri.getLastPathSegment();
-                // добавляем ID к условию выборки
+            case URI_MAILS_ID:
+                table = MailTable.TABLE_NAME;
+                String mid = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    selection = CHAR_ID + " = " + id;
+                    selection = MailTable.MAIL_ID + " = " + mid;
                 } else {
-                    selection = selection + " AND " + CHAR_ID + " = " + id;
+                    selection = selection + " AND " + MailTable.MAIL_ID + " = " + mid;
+                }
+                break;
+            case URI_MAILS_CHARID:
+                table = MailTable.TABLE_NAME;
+                String qid = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    selection = MailTable.MAIL_CHAR_ID + " = " + qid;
+                } else {
+                    selection = selection + " AND " + MailTable.MAIL_CHAR_ID + " = " + qid;
                 }
                 break;
             default:
                 throw new IllegalArgumentException("Wrong URI: " + uri);
         }
-        db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.query(CHAR_TABLE, projection, selection,
-                selectionArgs, null, null, sortOrder);
-        cursor.setNotificationUri(getContext().getContentResolver(),
-                CHARS_CONTENT_URI);
+        SQLiteDatabase database = eveSQLHelper.getWritableDatabase();
+        int delCount = database.delete(table, selection, selectionArgs);
+        if (delCount > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return delCount;
+    }
+
+    @Override
+    public String getType(Uri uri) {
+        String type = null;
+        switch (URI_MATCHER.match(uri)) {
+            case URI_MAILS:
+                type = MailTable.TYPE_DIR;
+                break;
+            case URI_CHARS:
+                type = CharTable.TYPE_DIR;
+                break;
+            case URI_MAILS_ID:
+                type = MailTable.TYPE_ITEM;
+                break;
+            case URI_CHARS_ID:
+                type = CharTable.TYPE_ITEM;
+                break;
+            case URI_MAILS_CHARID:
+                type = MailTable.TYPE_DIR;
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Not yet implemented: " + uri.toString());
+        }
+        return type;
+    }
+
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        String table = null;
+        switch (URI_MATCHER.match(uri)) {
+            case URI_CHARS:
+                table = CharTable.TABLE_NAME;
+                break;
+            case URI_MAILS:
+                table = MailTable.TABLE_NAME;
+                break;
+            default:
+                throw new UnsupportedOperationException("Not yet implemented: " + uri.toString());
+        }
+        SQLiteDatabase sqLiteDatabase = eveSQLHelper.getWritableDatabase();
+        long id = sqLiteDatabase.replace(table, null, values);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return Uri.withAppendedPath(uri, String.valueOf(id));
+    }
+
+  /*  @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        int count = 0;
+        if (values != null && values.length > 0) {
+            String tableName = null;
+            SQLiteDatabase sqLiteDatabase = trainingsSQLHelper.getWritableDatabase();
+            switch (URI_MATCHER.match(uri)) {
+                case TRAININGS:
+                    tableName = TrainingsTable.TABLE_NAME;
+                    break;
+                case EQUIPMENT:
+                    tableName = EquipmentTable.TABLE_NAME;
+                    break;
+                case WAYPOINTS:
+                    tableName = WayPointsTable.TABLE_NAME;
+                    break;
+                default:
+                    throw new UnsupportedOperationException("not implemented yet");
+            }
+
+            try {
+                sqLiteDatabase.beginTransaction();
+                for (ContentValues contentValues : values) {
+                    long id = sqLiteDatabase.replace(tableName, null, contentValues);
+                    if (id >= 0) {
+                        count++;
+                    }
+                }
+                sqLiteDatabase.setTransactionSuccessful();
+            } finally {
+                sqLiteDatabase.endTransaction();
+            }
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return count;
+    }*/
+
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection,
+                        String[] selectionArgs, String sortOrder) {
+        Log.d(TAG, "query:" + uri.toString() + ", projection: " + Arrays.toString(projection) +
+                ", selection: " + selection + ", selectionargs: " + Arrays.toString(selectionArgs) +
+                ", sortOrder: " + sortOrder);
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        switch (URI_MATCHER.match(uri)) {
+            case URI_CHARS:
+                builder.setTables(CharTable.TABLE_NAME);
+                break;
+            case URI_MAILS:
+                builder.setTables(MailTable.TABLE_NAME);
+                break;
+            case URI_CHARS_ID:
+                builder.setTables(CharTable.TABLE_NAME);
+                builder.appendWhere(CharTable.TABLE_NAME + "." + CharTable.CHAR_CREST_ID + " = " + uri.getLastPathSegment());
+                break;
+            case URI_MAILS_ID:
+                builder.setTables(MailTable.TABLE_NAME);
+                builder.appendWhere(MailTable.TABLE_NAME + "." + MailTable.MAIL_ID + " = " + uri.getLastPathSegment());
+                break;
+            case URI_MAILS_CHARID:
+                builder.setTables(MailTable.TABLE_NAME);
+                builder.appendWhere(MailTable.TABLE_NAME + "."+ MailTable.MAIL_CHAR_ID + " = " + uri.getLastPathSegment());
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Not yet implemented: " + uri.toString());
+        }
+
+        SQLiteDatabase sqLiteDatabase = eveSQLHelper.getReadableDatabase();
+        Cursor cursor = builder.query(sqLiteDatabase, projection, selection, selectionArgs, null, null, sortOrder);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
-    public Uri insert(Uri uri, ContentValues values) {
-        if (uriMatcher.match(uri) != URI_CHARS)
-            throw new IllegalArgumentException("Wrong URI: " + uri);
-
-        db = dbHelper.getWritableDatabase();
-        long rowID = db.insert(CHAR_TABLE, null, values);
-        Uri resultUri = ContentUris.withAppendedId(CHARS_CONTENT_URI, rowID);
-        // уведомляем ContentResolver, что данные по адресу resultUri изменились
-        getContext().getContentResolver().notifyChange(resultUri, null);
-        return resultUri;
-    }
-
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        switch (uriMatcher.match(uri)) {
-            case URI_CHARS:
-                break;
-            case URI_CHARS_ID:
-                String id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    selection = CHAR_ID + " = " + id;
-                } else {
-                    selection = selection + " AND " + CHAR_ID + " = " + id;
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong URI: " + uri);
-        }
-        db = dbHelper.getWritableDatabase();
-        int cnt = db.delete(CHAR_TABLE, selection, selectionArgs);
-        getContext().getContentResolver().notifyChange(uri, null);
-        return cnt;
-    }
-
+    @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        switch (uriMatcher.match(uri)) {
+        Log.d(TAG, "update: " + uri + ", selection: " + selection
+                + ", selection args: " + Arrays.toString(selectionArgs) + ", values: " + values);
+        String table = null;
+        switch (URI_MATCHER.match(uri)) {
             case URI_CHARS:
-
+                table = CharTable.TABLE_NAME;
                 break;
             case URI_CHARS_ID:
-                String id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    selection = CHAR_ID + " = " + id;
+                table = CharTable.TABLE_NAME;
+                String request = CharTable.CHAR_CREST_ID + " = " + uri.getLastPathSegment();
+                if (selection == null) {
+                    selection = request;
                 } else {
-                    selection = selection + " AND " + CHAR_ID + " = " + id;
+                    selection += " AND " + request;
                 }
                 break;
+            case URI_MAILS_ID:
+                table = MailTable.TABLE_NAME;
+                String eRequest = MailTable.MAIL_ID + " = " + uri.getLastPathSegment();
+                if (selection == null) {
+                    selection = eRequest;
+                } else {
+                    selection += " AND " + eRequest;
+                }
+                break;
+            case URI_MAILS:
+                table = MailTable.TABLE_NAME;
+                break;
             default:
-                throw new IllegalArgumentException("Wrong URI: " + uri);
+                throw new UnsupportedOperationException("Not yet implemented: " + uri.toString());
         }
-        db = dbHelper.getWritableDatabase();
-        int cnt = db.update(CHAR_TABLE, values, selection, selectionArgs);
+
+        SQLiteDatabase sqLiteDatabase = eveSQLHelper.getWritableDatabase();
+        int count = sqLiteDatabase.update(table, values, selection, selectionArgs);
         getContext().getContentResolver().notifyChange(uri, null);
-        return cnt;
-    }
-
-
-    public String getType(Uri uri) {
-        switch (uriMatcher.match(uri)) {
-            case URI_CHARS:
-                return CHARS_CONTENT_TYPE;
-            case URI_CHARS_ID:
-                return CHARS_CONTENT_ITEM_TYPE;
-        }
-        return null;
-    }
-
-
-    private class DBHelper extends SQLiteOpenHelper {
-
-        public DBHelper(Context context) {
-            super(context, DB_NAME, null, DB_VERSION);
-        }
-
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL(DB_CREATE);
-        }
-
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE " + CHAR_TABLE);
-            onCreate(db);
-        }
+        return count;
     }
 }
-

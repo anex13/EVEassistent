@@ -74,82 +74,82 @@ public class CharDBClass {
     }
 
     public CharDBClass(Cursor cursor) {
-        this.accesToken = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_ACS_TOKEN));
-        this.refreshToken = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_REFRESH_TOKEN));
-        this.charID = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_CREST_ID));
-        this.charName = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_NAME));
-        this.gender = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_GENDER));
-        this.birthday = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_BIRTHDAY));
-        this.race = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_RACE_INT));
-        this.raceStr = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_RACE_STR));
-        this.description = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_DESCRIPTION));
-        this.corpID = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_CORP_ID));
-        this.corpName = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_CORP_NAME));
-        this.corpMembers = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_CORP_MEMBERS));
-        this.corpTiker = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_CORP_TIKER));
-        this.shipName = cursor.getString(cursor.getColumnIndex(ContentProvider.CHAR_SHIP_NAME));
-        this.shipid = cursor.getInt(cursor.getColumnIndex(ContentProvider.CHAR_SHIP_ID));
-        this.shipItemID = cursor.getLong(cursor.getColumnIndex(ContentProvider.CHAR_SHIP_ITEM_ID));
+        this.accesToken = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_ACS_TOKEN));
+        this.refreshToken = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_REFRESH_TOKEN));
+        this.charID = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_CREST_ID));
+        this.charName = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_NAME));
+        this.gender = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_GENDER));
+        this.birthday = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_BIRTHDAY));
+        this.race = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_RACE_INT));
+        this.raceStr = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_RACE_STR));
+        this.description = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_DESCRIPTION));
+        this.corpID = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_CORP_ID));
+        this.corpName = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_CORP_NAME));
+        this.corpMembers = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_CORP_MEMBERS));
+        this.corpTiker = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_CORP_TIKER));
+        this.shipName = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SHIP_NAME));
+        this.shipid = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SHIP_ID));
+        this.shipItemID = cursor.getLong(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SHIP_ITEM_ID));
     }
 
     public CharDBClass(Bundle bundle) {
-        this.accesToken = bundle.getString(ContentProvider.CHAR_ACS_TOKEN);
-        this.refreshToken = bundle.getString(ContentProvider.CHAR_REFRESH_TOKEN);
-        this.charID = bundle.getInt(ContentProvider.CHAR_CREST_ID);
-        this.charName = bundle.getString(ContentProvider.CHAR_NAME);
-        this.gender = bundle.getString(ContentProvider.CHAR_GENDER);
-        this.birthday = bundle.getString(ContentProvider.CHAR_BIRTHDAY);
-        this.race = bundle.getInt(ContentProvider.CHAR_RACE_INT);
-        this.raceStr = bundle.getString(ContentProvider.CHAR_RACE_STR);
-        this.description = bundle.getString(ContentProvider.CHAR_DESCRIPTION);
-        this.corpID = bundle.getInt(ContentProvider.CHAR_CORP_ID);
-        this.corpName = bundle.getString(ContentProvider.CHAR_CORP_NAME);
-        this.corpMembers = bundle.getInt(ContentProvider.CHAR_CORP_MEMBERS);
-        this.corpTiker = bundle.getString(ContentProvider.CHAR_CORP_TIKER);
-        this.shipName = bundle.getString(ContentProvider.CHAR_SHIP_NAME);
-        this.shipid = bundle.getInt(ContentProvider.CHAR_SHIP_ID);
-        this.shipItemID = bundle.getLong(ContentProvider.CHAR_SHIP_ITEM_ID);
+        this.accesToken = bundle.getString(DBColumns.CharTable.CHAR_ACS_TOKEN);
+        this.refreshToken = bundle.getString(DBColumns.CharTable.CHAR_REFRESH_TOKEN);
+        this.charID = bundle.getInt(DBColumns.CharTable.CHAR_CREST_ID);
+        this.charName = bundle.getString(DBColumns.CharTable.CHAR_NAME);
+        this.gender = bundle.getString(DBColumns.CharTable.CHAR_GENDER);
+        this.birthday = bundle.getString(DBColumns.CharTable.CHAR_BIRTHDAY);
+        this.race = bundle.getInt(DBColumns.CharTable.CHAR_RACE_INT);
+        this.raceStr = bundle.getString(DBColumns.CharTable.CHAR_RACE_STR);
+        this.description = bundle.getString(DBColumns.CharTable.CHAR_DESCRIPTION);
+        this.corpID = bundle.getInt(DBColumns.CharTable.CHAR_CORP_ID);
+        this.corpName = bundle.getString(DBColumns.CharTable.CHAR_CORP_NAME);
+        this.corpMembers = bundle.getInt(DBColumns.CharTable.CHAR_CORP_MEMBERS);
+        this.corpTiker = bundle.getString(DBColumns.CharTable.CHAR_CORP_TIKER);
+        this.shipName = bundle.getString(DBColumns.CharTable.CHAR_SHIP_NAME);
+        this.shipid = bundle.getInt(DBColumns.CharTable.CHAR_SHIP_ID);
+        this.shipItemID = bundle.getLong(DBColumns.CharTable.CHAR_SHIP_ITEM_ID);
     }
 
     public ContentValues toContentValues() {
         ContentValues cv = new ContentValues();
-        cv.put(ContentProvider.CHAR_ACS_TOKEN,accesToken);
-        cv.put(ContentProvider.CHAR_REFRESH_TOKEN,refreshToken);
-        cv.put(ContentProvider.CHAR_CREST_ID,charID);
-        cv.put(ContentProvider.CHAR_NAME,charName);
-        cv.put(ContentProvider.CHAR_GENDER,gender);
-        cv.put(ContentProvider.CHAR_BIRTHDAY,birthday);
-        cv.put(ContentProvider.CHAR_RACE_INT,race);
-        cv.put(ContentProvider.CHAR_RACE_STR,raceStr);
-        cv.put(ContentProvider.CHAR_DESCRIPTION,description);
-        cv.put(ContentProvider.CHAR_CORP_ID,corpID);
-        cv.put(ContentProvider.CHAR_CORP_NAME,corpName);
-        cv.put(ContentProvider.CHAR_CORP_MEMBERS,corpMembers);
-        cv.put(ContentProvider.CHAR_CORP_TIKER,corpTiker);
-        cv.put(ContentProvider.CHAR_SHIP_NAME,shipName);
-        cv.put(ContentProvider.CHAR_SHIP_ID,shipid);
-        cv.put(ContentProvider.CHAR_SHIP_ITEM_ID,shipItemID);
+        cv.put(DBColumns.CharTable.CHAR_ACS_TOKEN,accesToken);
+        cv.put(DBColumns.CharTable.CHAR_REFRESH_TOKEN,refreshToken);
+        cv.put(DBColumns.CharTable.CHAR_CREST_ID,charID);
+        cv.put(DBColumns.CharTable.CHAR_NAME,charName);
+        cv.put(DBColumns.CharTable.CHAR_GENDER,gender);
+        cv.put(DBColumns.CharTable.CHAR_BIRTHDAY,birthday);
+        cv.put(DBColumns.CharTable.CHAR_RACE_INT,race);
+        cv.put(DBColumns.CharTable.CHAR_RACE_STR,raceStr);
+        cv.put(DBColumns.CharTable.CHAR_DESCRIPTION,description);
+        cv.put(DBColumns.CharTable.CHAR_CORP_ID,corpID);
+        cv.put(DBColumns.CharTable.CHAR_CORP_NAME,corpName);
+        cv.put(DBColumns.CharTable.CHAR_CORP_MEMBERS,corpMembers);
+        cv.put(DBColumns.CharTable.CHAR_CORP_TIKER,corpTiker);
+        cv.put(DBColumns.CharTable.CHAR_SHIP_NAME,shipName);
+        cv.put(DBColumns.CharTable.CHAR_SHIP_ID,shipid);
+        cv.put(DBColumns.CharTable.CHAR_SHIP_ITEM_ID,shipItemID);
         return cv;
     }
 
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
-        bundle.putString(ContentProvider.CHAR_ACS_TOKEN,accesToken);
-        bundle.putString(ContentProvider.CHAR_REFRESH_TOKEN,refreshToken);
-        bundle.putInt(ContentProvider.CHAR_CREST_ID,charID);
-        bundle.putString(ContentProvider.CHAR_NAME,charName);
-        bundle.putString(ContentProvider.CHAR_GENDER,gender);
-        bundle.putString(ContentProvider.CHAR_BIRTHDAY,birthday);
-        bundle.putInt(ContentProvider.CHAR_RACE_INT,race);
-        bundle.putString(ContentProvider.CHAR_RACE_STR,raceStr);
-        bundle.putString(ContentProvider.CHAR_DESCRIPTION,description);
-        bundle.putInt(ContentProvider.CHAR_CORP_ID,corpID);
-        bundle.putString(ContentProvider.CHAR_CORP_NAME,corpName);
-        bundle.putInt(ContentProvider.CHAR_CORP_MEMBERS,corpMembers);
-        bundle.putString(ContentProvider.CHAR_CORP_TIKER,corpTiker);
-        bundle.putString(ContentProvider.CHAR_SHIP_NAME,shipName);
-        bundle.putInt(ContentProvider.CHAR_SHIP_ID,shipid);
-        bundle.putLong(ContentProvider.CHAR_SHIP_ITEM_ID,shipItemID);
+        bundle.putString(DBColumns.CharTable.CHAR_ACS_TOKEN,accesToken);
+        bundle.putString(DBColumns.CharTable.CHAR_REFRESH_TOKEN,refreshToken);
+        bundle.putInt(DBColumns.CharTable.CHAR_CREST_ID,charID);
+        bundle.putString(DBColumns.CharTable.CHAR_NAME,charName);
+        bundle.putString(DBColumns.CharTable.CHAR_GENDER,gender);
+        bundle.putString(DBColumns.CharTable.CHAR_BIRTHDAY,birthday);
+        bundle.putInt(DBColumns.CharTable.CHAR_RACE_INT,race);
+        bundle.putString(DBColumns.CharTable.CHAR_RACE_STR,raceStr);
+        bundle.putString(DBColumns.CharTable.CHAR_DESCRIPTION,description);
+        bundle.putInt(DBColumns.CharTable.CHAR_CORP_ID,corpID);
+        bundle.putString(DBColumns.CharTable.CHAR_CORP_NAME,corpName);
+        bundle.putInt(DBColumns.CharTable.CHAR_CORP_MEMBERS,corpMembers);
+        bundle.putString(DBColumns.CharTable.CHAR_CORP_TIKER,corpTiker);
+        bundle.putString(DBColumns.CharTable.CHAR_SHIP_NAME,shipName);
+        bundle.putInt(DBColumns.CharTable.CHAR_SHIP_ID,shipid);
+        bundle.putLong(DBColumns.CharTable.CHAR_SHIP_ITEM_ID,shipItemID);
         return bundle;
     }
     public int getId() {

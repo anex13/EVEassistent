@@ -1,5 +1,8 @@
 package com.anex13.eveassistent;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import com.anex13.eveassistent.classesForApi.mail.Recipient;
 
 import java.util.List;
@@ -9,34 +12,60 @@ import java.util.List;
  */
 
 public class MailDBClass {
-    private Boolean isRead;
+    private Integer isRead;
     private Integer mailId;
-    //private List<Integer> labels = null;
-    //private List<Recipient> recipients = null;
+    private Integer fromID;
+    private String fromName;
     private String subject;
-    private Integer from;
     private String body;
     private String timestamp;
-    private Boolean read;
-    private int charid;
+    private Integer charid;
 
-    public MailDBClass(Boolean isRead, Integer mailId, String subject, Integer from, String body, String timestamp, Boolean read, int charid) {
-        this.isRead = isRead;
+    public MailDBClass(Boolean isRead, Integer mailId, int fromID, String fromName, String subject, String body, String timestamp, int charid) {
+        if (isRead)
+            this.isRead=1;
+        else this.isRead=0;
         this.mailId = mailId;
+        this.fromID = fromID;
+        this.fromName = fromName;
         this.subject = subject;
-        this.from = from;
         this.body = body;
         this.timestamp = timestamp;
-        this.read = read;
         this.charid = charid;
     }
+    public MailDBClass(Cursor cursor) {
 
+        if (cursor.getInt(cursor.getColumnIndex(DBColumns.MailTable.MAIL_ISREAD))!=0)
+            isRead=1;
+        else isRead=0;
+        mailId = cursor.getInt(cursor.getColumnIndex(DBColumns.MailTable.MAIL_ID));
+        fromID = cursor.getInt(cursor.getColumnIndex(DBColumns.MailTable.MAIL_FROM_ID));
+        fromName = cursor.getString(cursor.getColumnIndex(DBColumns.MailTable.MAIL_FROM));
+        subject = cursor.getString(cursor.getColumnIndex(DBColumns.MailTable.MAIL_SUBJ));
+        body = cursor.getString(cursor.getColumnIndex(DBColumns.MailTable.MAIL_BODY));
+        timestamp = cursor.getString(cursor.getColumnIndex(DBColumns.MailTable.MAIL_MAIL_TIME));
+        charid = cursor.getInt(cursor.getColumnIndex(DBColumns.MailTable.MAIL_CHAR_ID));
+    }
+    public ContentValues toContentValues() {
+        ContentValues cv = new ContentValues();
+        cv.put(DBColumns.MailTable.MAIL_ID,mailId);
+        cv.put(DBColumns.MailTable.MAIL_ISREAD,isRead);
+        cv.put(DBColumns.MailTable.MAIL_FROM_ID,fromID);
+        cv.put(DBColumns.MailTable.MAIL_FROM,fromName);
+        cv.put(DBColumns.MailTable.MAIL_SUBJ,subject);
+        cv.put(DBColumns.MailTable.MAIL_BODY,body);
+        cv.put(DBColumns.MailTable.MAIL_MAIL_TIME,timestamp);
+        cv.put(DBColumns.MailTable.MAIL_CHAR_ID,charid);
+        return cv;
+    }
     public Boolean getRead() {
-        return isRead;
+        return !(isRead!=0);
     }
 
-    public void setRead(Boolean read) {
-        isRead = read;
+    public void setRead(Boolean isRead) {
+        if (isRead)
+            this.isRead=1;
+        else this.isRead=0;
     }
 
     public int getCharid() {
@@ -63,14 +92,6 @@ public class MailDBClass {
         this.subject = subject;
     }
 
-    public Integer getFrom() {
-        return from;
-    }
-
-    public void setFrom(Integer from) {
-        this.from = from;
-    }
-
     public String getBody() {
         return body;
     }
@@ -85,5 +106,25 @@ public class MailDBClass {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Integer getFromID() {
+        return fromID;
+    }
+
+    public void setFromID(Integer fromID) {
+        this.fromID = fromID;
+    }
+
+    public String getFromName() {
+        return fromName;
+    }
+
+    public void setFromName(String fromName) {
+        this.fromName = fromName;
+    }
+
+    public void setCharid(Integer charid) {
+        this.charid = charid;
     }
 }

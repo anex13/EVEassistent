@@ -17,7 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.anex13.eveassistent.dbAdapters.CharAdapter;
 
 public class CharManage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int MENU_DEL_CHAR = 1;
@@ -43,8 +47,19 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
         getLoaderManager().initLoader(123, null, this);
         if (android.os.Build.VERSION.SDK_INT >= 21) {
             getWindow().setStatusBarColor(0x000000);
-        }
 
+        }
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String id = ((TextView) view.findViewById(R.id.adapter_char_id)).getText().toString();
+                int intid = Integer.parseInt(id);
+                SharedPreferences.Editor editor =spref.edit();
+                editor.putInt(CS.SPREF_DEF_CHAR,intid);
+                editor.apply();
+                Log.i("def","char set"+intid);
+            }
+        });
 
     }
 
@@ -89,7 +104,7 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        return new CursorLoader(this, ContentProvider.CHARS_CONTENT_URI, null, null, null, null);
+        return new CursorLoader(this, DBColumns.CharTable.CONTENT_URI, null, null, null, null);
     }
 
     @Override
@@ -121,7 +136,8 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Uri uri = ContentUris.withAppendedId(ContentProvider.CHARS_CONTENT_URI, menuchar.getId());
+                        Uri uri = ContentUris.withAppendedId(DBColumns.CharTable.CONTENT_URI, menuchar.getCharID());
+                        Log.e("char del","uri"+uri.toString());
                         getApplicationContext().getContentResolver().delete(uri, null, null);
                     }
                 }).start();

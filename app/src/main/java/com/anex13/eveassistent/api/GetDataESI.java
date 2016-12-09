@@ -4,6 +4,8 @@ import com.anex13.eveassistent.classesForApi.CharCorpHistory;
 import com.anex13.eveassistent.classesForApi.CharPublicData;
 import com.anex13.eveassistent.classesForApi.CharShipInfo;
 import com.anex13.eveassistent.classesForApi.CorpInfo;
+import com.anex13.eveassistent.classesForApi.mail.Mail;
+import com.anex13.eveassistent.classesForApi.mail.MailHeaders;
 
 import java.util.List;
 
@@ -29,13 +31,13 @@ public interface GetDataESI {
     Call<CorpInfo> getCorpInfo(@Path("id") int id);
 
     @Headers({"Accept: application/json"})
-    @GET("c/characters/{character_id}/assets/?datasource=tranquility")
-    Call<CharShipInfo> getCharAssets(@Path("character_id") int charid, @Header("Authorization") String barer);
+    @GET("characters/{character_id}/mail/?datasource=tranquility")
+    Call<List<MailHeaders>> getMailHeaders(@Path("character_id") int charid, @Header("Authorization") String barer);
     //todo call types
 
-   // @Headers({"Accept: application/json"})
-  //  @GET("/characters/{character_id}/bookmarks/?datasource=tranquility")
-   // Call<CharShipInfo> getCharBookmarks(@Path("character_id") int charid, @Header("Authorization") String barer);
+    @Headers({"Accept: application/json"})
+    @GET("characters/{character_id}/mail/{mail_id}/?datasource=tranquility")
+    Call<Mail> getMailBody(@Path("character_id") int charid,@Path("mail_id") int mailid, @Header("Authorization") String barer);
 
     //@Headers({"Accept: application/json"})
    // @GET("/characters/{character_id}/bookmarks/folders/?datasource=tranquility")
@@ -44,7 +46,7 @@ public interface GetDataESI {
     //@Headers({"Accept: application/json"})
     //@GET("/characters/{character_id}/calendar/?datasource=tranquility")
    // Call<CharShipInfo> getCharCalendar(@Path("character_id") int charid, @Header("Authorization") String barer);
-
+/*
     @Headers({"Accept: application/json"})
     @GET("/characters/{character_id}/corporationhistory/?datasource=tranquility")
     Call<List<CharCorpHistory>> getCharCorpHistory(@Path("character_id") int charid, @Header("Authorization") String barer);
@@ -72,7 +74,7 @@ public interface GetDataESI {
     @Headers({"Accept: application/json"})
     @GET("/incursions/?datasource=tranquility")
     Call<CharShipInfo> getIncursions( @Header("Authorization") String barer);
-
+*/
 
 
 
