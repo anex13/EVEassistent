@@ -99,9 +99,9 @@ public class CS {
             + "esi-universe.read_structures.v1 "//: Allows querying the location and type of structures that the character has docking access at.
             + "esi-calendar.respond_calendar_events.v1 "//: Allows updating of a character's calendar event responses
             + "esi-search.search_structures.v1 "//: Allows searching over all structures that a character can see in the structure browser.
-            +" esi-mail.read_mail.v1 "
-            +"esi-mail.send_mail.v1 "
-            +"esi-mail.organize_mail.v1 "
+            //+" esi-mail.read_mail.v1 "
+            //+"esi-mail.send_mail.v1 "
+            //+"esi-mail.organize_mail.v1 "
             + "esi-ui.write_waypoint.v1"//: Allows manipulating waypoints in game client remotely
             + "&";
     public static final String CHAR_NAME = "char name";
@@ -134,9 +134,6 @@ public class CS {
     // &response_type=token
     // &redirect_uri=https://esi.tech.ccp.is/latest/o2c.html
     // &realm=ESI
-    // &client_id=eadab3ac00814cf6938445ef59987b49
-    // &scope=esi-assets.read_assets.v1 esi-bookmarks.read_character_bookmarks.v1 esi-calendar.read_calendar_events.v1 esi-calendar.respond_calendar_events.v1 esi-characters.read_contacts.v1 esi-clones.read_clones.v1 esi-corporations.read_corporation_membership.v1 esi-killmails.read_killmails.v1 esi-location.read_location.v1 esi-location.read_ship_type.v1 esi-mail.organize_mail.v1 esi-mail.read_mail.v1 esi-mail.send_mail.v1 esi-search.search_structures.v1 esi-skills.read_skillqueue.v1 esi-skills.read_skills.v1 esi-universe.read_structures.v1 esi-wallet.read_character_wallet.v1&state=evesso
-
 
     //routes crest !!!--------------------------------------------------------------------------------------------------------------------------------
 

@@ -85,3 +85,4 @@ public class MailActivity extends AppCompatActivity implements LoaderManager.Loa
         startActivity(tomainactivity);
     }
 }
+// TODO: 09.12.2016 ПРОВЕРЯТЬ ДОСТУПНОСТЬ СКОУПОВ
