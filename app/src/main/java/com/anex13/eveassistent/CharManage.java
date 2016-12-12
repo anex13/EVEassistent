@@ -17,11 +17,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.anex13.eveassistent.dbAdapters.CharAdapter;
+import com.anex13.eveassistent.db.CharAdapter;
+import com.anex13.eveassistent.db.CharDBClass;
+import com.anex13.eveassistent.db.DBColumns;
 
 public class CharManage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int MENU_DEL_CHAR = 1;

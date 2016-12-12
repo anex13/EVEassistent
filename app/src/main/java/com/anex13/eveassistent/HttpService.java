@@ -17,8 +17,14 @@ import com.anex13.eveassistent.classesForApi.CharID;
 import com.anex13.eveassistent.classesForApi.CharPublicData;
 import com.anex13.eveassistent.classesForApi.CharShipInfo;
 import com.anex13.eveassistent.classesForApi.CorpInfo;
+import com.anex13.eveassistent.classesForApi.Skill;
+import com.anex13.eveassistent.classesForApi.SkillsDone;
 import com.anex13.eveassistent.classesForApi.mail.Mail;
 import com.anex13.eveassistent.classesForApi.mail.MailHeaders;
+import com.anex13.eveassistent.classesForApi.Wallet;
+import com.anex13.eveassistent.db.CharDBClass;
+import com.anex13.eveassistent.db.DBColumns;
+import com.anex13.eveassistent.db.MailDBClass;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -57,6 +63,11 @@ public class HttpService extends IntentService {
                 CharPublicData charData = getPublicData(id.getCharacterID());
                 CharShipInfo ship = getCharShipInfo(token.getAccessToken(), id.getCharacterID());
                 CorpInfo corp = getCorpInfo(charData.getCorporationId());
+                List<Wallet> wallets= getWallet(id.getCharacterID(),token.getAccessToken());
+                SkillsDone skillsDone = getSkills(id.getCharacterID(),token.getAccessToken());
+                Wallet wallet=wallets.get(0);
+                if (wallet.getWalletId()!=1000)
+                    wallet=wallets.get(1);
                 final CharDBClass newchar = new CharDBClass(
                         token.getAccessToken(),
                         token.getRefreshToken(),
@@ -72,7 +83,9 @@ public class HttpService extends IntentService {
                         corp.getTicker(),
                         ship.getShipName(),
                         ship.getShipTypeId(),
-                        ship.getShipItemId());
+                        ship.getShipItemId(),
+                        wallet.getBalance(),
+                        skillsDone.getTotalSp());
                 Log.i("created char", newchar.toString());
                 new Thread(new Runnable() {
                     @Override
@@ -80,8 +93,6 @@ public class HttpService extends IntentService {
                         mainContext.getContentResolver().insert(DBColumns.CharTable.CONTENT_URI, newchar.toContentValues());
                     }
                 }).start();
-
-
             SharedPreferences.Editor editor =spref.edit();
                 editor.putInt(CS.SPREF_DEF_CHAR,id.getCharacterID());
                 editor.apply();
@@ -96,6 +107,8 @@ public class HttpService extends IntentService {
                 getMailtoDB(updateMailList(char1.getCharID(), char1.getAccesToken()), char1.getCharID(), char1.getAccesToken());
                 // else Log.i("mail list","list is null");
             }
+
+
             default:
                 break;
         }
@@ -127,7 +140,6 @@ public class HttpService extends IntentService {
         return null;
     }                                       //exchange acces code for tokens  //todo переделать в бд
 
-    @Nullable
     public static void refreshTokens(int charID, final Context context) {
         final Uri uri = ContentUris.withAppendedId(DBColumns.CharTable.CONTENT_URI, charID);
         final CharDBClass pers = getCharfrfomdb(charID);
@@ -194,7 +206,6 @@ public class HttpService extends IntentService {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         GetDataESI service = retrofit.create(GetDataESI.class);
-        String barer = "Bearer " + spref.getString(CS.AUTH_TOKEN_TAG, "");
         Call<CharPublicData> character = service.getPublicData(charID);
         try {
             Response<CharPublicData> resp = character.execute();
@@ -267,6 +278,7 @@ public class HttpService extends IntentService {
             }
 
         } finally {
+            if (c!=null)
             c.close();
             Log.i("cursor", "close cursr");
         }
@@ -321,6 +333,51 @@ public class HttpService extends IntentService {
         }
     }
 
+    @Nullable
+    public static List<Wallet> getWallet(int charID, String accsToken){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(CS.BASE_URL_ESI)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetDataESI service = retrofit.create(GetDataESI.class);
+        String barer = "Bearer " + accsToken;
+        Call<List<Wallet>> character = service.getWallet(charID, barer);
+        try {
+            Response<List<Wallet>> resp = character.execute();
+            if (resp.isSuccessful())
+                return resp.body();
+            else refreshTokens(charID, mainContext);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    @Nullable
+    public static SkillsDone getSkills (int charID, String accsToken){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://esi.tech.ccp.is/dev/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetDataESI service = retrofit.create(GetDataESI.class);
+        String barer = "Bearer " + accsToken;
+        Call<SkillsDone> skills = service.getSkillDone(charID, barer);
+        try {
+            Response<SkillsDone> resp = skills.execute();
+            if (resp.isSuccessful())
+                return resp.body();
+            else refreshTokens(charID, mainContext);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static void getSkillsToDB (List<Skill> skills,int charID){
+
+    }
 
 //вызовы
 

@@ -4,6 +4,8 @@ import com.anex13.eveassistent.classesForApi.CharCorpHistory;
 import com.anex13.eveassistent.classesForApi.CharPublicData;
 import com.anex13.eveassistent.classesForApi.CharShipInfo;
 import com.anex13.eveassistent.classesForApi.CorpInfo;
+import com.anex13.eveassistent.classesForApi.SkillsDone;
+import com.anex13.eveassistent.classesForApi.Wallet;
 import com.anex13.eveassistent.classesForApi.mail.Mail;
 import com.anex13.eveassistent.classesForApi.mail.MailHeaders;
 
@@ -39,42 +41,15 @@ public interface GetDataESI {
     @GET("characters/{character_id}/mail/{mail_id}/?datasource=tranquility")
     Call<Mail> getMailBody(@Path("character_id") int charid,@Path("mail_id") int mailid, @Header("Authorization") String barer);
 
-    //@Headers({"Accept: application/json"})
-   // @GET("/characters/{character_id}/bookmarks/folders/?datasource=tranquility")
-   // Call<CharShipInfo> getCharBookmarksFolders(@Path("character_id") int charid, @Header("Authorization") String barer);
-
-    //@Headers({"Accept: application/json"})
-    //@GET("/characters/{character_id}/calendar/?datasource=tranquility")
-   // Call<CharShipInfo> getCharCalendar(@Path("character_id") int charid, @Header("Authorization") String barer);
-/*
-    @Headers({"Accept: application/json"})
-    @GET("/characters/{character_id}/corporationhistory/?datasource=tranquility")
-    Call<List<CharCorpHistory>> getCharCorpHistory(@Path("character_id") int charid, @Header("Authorization") String barer);
 
     @Headers({"Accept: application/json"})
-    @GET("/characters/{character_id}/killmails/recent/?datasource=tranquility")
-    Call<CharShipInfo> getCharKillMails(@Path("character_id") int charid, @Header("Authorization") String barer);
+    @GET("characters/{character_id}/wallets/?datasource=tranquility")
+    Call<List<Wallet>> getWallet(@Path("character_id") int charid, @Header("Authorization") String barer);
+
 
     @Headers({"Accept: application/json"})
-    @GET("/characters/{character_id}/location/?datasource=tranquility")
-    Call<CharShipInfo> getCharLocation(@Path("character_id") int charid, @Header("Authorization") String barer);
-
-    @Headers({"Accept: application/json"})
-    @GET("/characters/{character_id}/skillqueue/?datasource=tranquility")
-    Call<CharShipInfo> getCharSkillQueue(@Path("character_id") int charid, @Header("Authorization") String barer);
-
-    @Headers({"Accept: application/json"})
-    @GET("/characters/{character_id}/skills/?datasource=tranquility")
-    Call<CharShipInfo> getCharSkills(@Path("character_id") int charid, @Header("Authorization") String barer);
-
-    @Headers({"Accept: application/json"})
-    @GET("/characters/{character_id}/wallets/?datasource=tranquility")
-    Call<CharShipInfo> getCharwallets(@Path("character_id") int charid, @Header("Authorization") String barer);
-
-    @Headers({"Accept: application/json"})
-    @GET("/incursions/?datasource=tranquility")
-    Call<CharShipInfo> getIncursions( @Header("Authorization") String barer);
-*/
+    @GET("characters/{character_id}/skills/?datasource=tranquility")
+    Call<SkillsDone> getSkillDone (@Path("character_id") int charid, @Header("Authorization") String barer);
 
 
 

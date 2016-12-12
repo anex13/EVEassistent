@@ -14,8 +14,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.anex13.eveassistent.dbAdapters.CharAdapter;
-import com.anex13.eveassistent.dbAdapters.MailAdapter;
+import com.anex13.eveassistent.db.DBColumns;
+import com.anex13.eveassistent.db.MailAdapter;
 
 public class MailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
