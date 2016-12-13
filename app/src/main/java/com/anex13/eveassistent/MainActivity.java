@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -17,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +27,9 @@ import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity
@@ -50,6 +53,14 @@ public class MainActivity extends AppCompatActivity
 
         });
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final SwipeRefreshLayout swipeRefreshLayout=(SwipeRefreshLayout)findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -66,6 +77,8 @@ public class MainActivity extends AppCompatActivity
         final ImageView navUsrPic =(ImageView) rootView.findViewById(R.id.nav_headrr_imageView);
         TextView navName = (TextView) rootView.findViewById(R.id.nav_header_name);
         TextView navCorp = (TextView) rootView.findViewById(R.id.nav_header_corp);
+        TextView navSP = (TextView) rootView.findViewById(R.id.nav_header_sp);
+        TextView navISK = (TextView) rootView.findViewById(R.id.nav_header_isk);
         if (spref.getInt(CS.SPREF_DEF_CHAR,0)==0)
         {
             Intent charactivity = new Intent(this, CharManage.class);
@@ -75,6 +88,8 @@ public class MainActivity extends AppCompatActivity
             CharDBClass pers = getCharfrfomdb(spref.getInt(CS.SPREF_DEF_CHAR,0),getApplicationContext());
             navName.setText(pers.getCharName());
             navCorp.setText(pers.getCorpName());
+            navSP.setText(NumberFormat.getNumberInstance(Locale.US).format(pers.getSpTotal()) +" SP");
+            navISK.setText(NumberFormat.getNumberInstance(Locale.US).format(pers.getWallet()/100) +" ISK");
             final String userpicurl = CS.BASE_URL_IMG + CS.CHAR_URL_IMG + pers.getCharID() + CS.IMG_SIZE_128 + ".jpg";
             Picasso.with(getApplicationContext())
                     .load(userpicurl)
@@ -202,4 +217,3 @@ public class MainActivity extends AppCompatActivity
     }
 
 }
-// TODO: 29.11.2016 ss

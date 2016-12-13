@@ -6,7 +6,7 @@ public class Wallet {
 
     @SerializedName("balance")
     @Expose
-    private Integer balance;
+    private Long balance;
     @SerializedName("wallet_id")
     @Expose
     private Integer walletId;
@@ -16,7 +16,7 @@ public class Wallet {
      * @return
      * The balance
      */
-    public Integer getBalance() {
+    public Long getBalance() {
         return balance;
     }
 
@@ -25,7 +25,7 @@ public class Wallet {
      * @param balance
      * The balance
      */
-    public void setBalance(Integer balance) {
+    public void setBalance(Long balance) {
         this.balance = balance;
     }
 

@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -59,6 +60,14 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
                 editor.putInt(CS.SPREF_DEF_CHAR,intid);
                 editor.apply();
                 Log.i("def","char set"+intid);
+            }
+        });
+        final SwipeRefreshLayout swrefl =(SwipeRefreshLayout) findViewById(R.id.charmng_swl);
+        swrefl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swrefl.setRefreshing(true);
+                HttpService.updateAllCharsMainInfo();
             }
         });
 

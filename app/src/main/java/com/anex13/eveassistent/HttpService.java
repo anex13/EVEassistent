@@ -44,6 +44,7 @@ public class HttpService extends IntentService {
     private static final String ACTION_CREATE_NEW_CHAR = "create char and add to db";
     private static final String ACTION_GET_MAIL = "get mail action";
     private static final String MAIL_CHAR_ID = "char id for getmail";
+    private static final String ACTION_UPDATE_ALL_CHARS = "update all chars main info";
 
     public HttpService() {
         super("httpservice");
@@ -63,11 +64,11 @@ public class HttpService extends IntentService {
                 CharPublicData charData = getPublicData(id.getCharacterID());
                 CharShipInfo ship = getCharShipInfo(token.getAccessToken(), id.getCharacterID());
                 CorpInfo corp = getCorpInfo(charData.getCorporationId());
-                List<Wallet> wallets= getWallet(id.getCharacterID(),token.getAccessToken());
-                SkillsDone skillsDone = getSkills(id.getCharacterID(),token.getAccessToken());
-                Wallet wallet=wallets.get(0);
-                if (wallet.getWalletId()!=1000)
-                    wallet=wallets.get(1);
+                List<Wallet> wallets = getWallet(id.getCharacterID(), token.getAccessToken());
+                SkillsDone skillsDone = getSkills(id.getCharacterID(), token.getAccessToken());
+                Wallet wallet = wallets.get(0);
+                if (wallet.getWalletId() != 1000)
+                    wallet = wallets.get(1);
                 final CharDBClass newchar = new CharDBClass(
                         token.getAccessToken(),
                         token.getRefreshToken(),
@@ -93,10 +94,11 @@ public class HttpService extends IntentService {
                         mainContext.getContentResolver().insert(DBColumns.CharTable.CONTENT_URI, newchar.toContentValues());
                     }
                 }).start();
-            SharedPreferences.Editor editor =spref.edit();
-                editor.putInt(CS.SPREF_DEF_CHAR,id.getCharacterID());
+                SharedPreferences.Editor editor = spref.edit();
+                editor.putInt(CS.SPREF_DEF_CHAR, id.getCharacterID());
                 editor.apply();
-            break;}
+                break;
+            }
 
             case ACTION_GET_MAIL: {
                 int id = intent.getIntExtra(MAIL_CHAR_ID, 0);
@@ -107,14 +109,42 @@ public class HttpService extends IntentService {
                 getMailtoDB(updateMailList(char1.getCharID(), char1.getAccesToken()), char1.getCharID(), char1.getAccesToken());
                 // else Log.i("mail list","list is null");
             }
+            case ACTION_UPDATE_ALL_CHARS: {
+                Cursor c=null;
+                try {
+                    c = mainContext.getContentResolver().query(DBColumns.CharTable.CONTENT_URI, null, null, null, null, null);
+                    if (c != null) {
+                        if (c.moveToFirst()) {
+                            do {
 
+                                CharDBClass user = new CharDBClass(c);
+                                CharPublicData pd=getPublicData(user.getCharID());
+                                CorpInfo ci=getCorpInfo(pd.getCorporationId());
+                                CharShipInfo ship=getCharShipInfo(user.getAccesToken(),user.getCharID());
+                                Wallet isk=getWallet(user.getCharID(),)
+
+
+
+                            } while (c.moveToNext());
+
+                        }
+                    } else {
+                        Log.d("chars udate all", "Cursor is null");
+                    }
+
+                } finally {
+                    if (c!=null)
+                    c.close();
+                    Log.i("chars udate all", "close srvers cursr");
+                }
+            }
 
             default:
                 break;
         }
     }
 
-    //auth srv
+    // auth srv
     @Nullable
     private static AuthToken getTokens(String authcode) {
         Gson gson = new GsonBuilder()
@@ -171,7 +201,7 @@ public class HttpService extends IntentService {
             e.printStackTrace();
         }
 
-    }                    //refresh tokens   //todo переделать в бд
+    }                       //refresh tokens   //todo переделать в бд
 
     @Nullable
     private static CharID validate(String accsToken) {
@@ -196,8 +226,10 @@ public class HttpService extends IntentService {
         getCharShipInfo(acsToken, charID);
     }
 
-    //public data without token
 
+
+
+    //public data without token
 
     @Nullable
     private static CharPublicData getPublicData(int charID) {
@@ -236,7 +268,7 @@ public class HttpService extends IntentService {
     }
 
 
-    //tokens needed
+    // tokens needed
     @Nullable
     private static CharShipInfo getCharShipInfo(String token, int charID) {
         Retrofit retrofit = new Retrofit.Builder()
@@ -278,8 +310,8 @@ public class HttpService extends IntentService {
             }
 
         } finally {
-            if (c!=null)
-            c.close();
+            if (c != null)
+                c.close();
             Log.i("cursor", "close cursr");
         }
         return charDBitem;
@@ -298,7 +330,7 @@ public class HttpService extends IntentService {
             if (resp.isSuccessful())
                 return resp.body();
             else {
-                Log.e("mailList",resp.raw().toString());
+                Log.e("mailList", resp.raw().toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -306,8 +338,48 @@ public class HttpService extends IntentService {
         return null;
     }
 
+    @Nullable
+    public static List<Wallet> getWallet(int charID, String accsToken) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(CS.BASE_URL_ESI)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetDataESI service = retrofit.create(GetDataESI.class);
+        String barer = "Bearer " + accsToken;
+        Call<List<Wallet>> character = service.getWallet(charID, barer);
+        try {
+            Response<List<Wallet>> resp = character.execute();
+            if (resp.isSuccessful())
+                return resp.body();
+            else refreshTokens(charID, mainContext);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static SkillsDone getSkills(int charID, String accsToken) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://esi.tech.ccp.is/dev/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GetDataESI service = retrofit.create(GetDataESI.class);
+        String barer = "Bearer " + accsToken;
+        Call<SkillsDone> skills = service.getSkillDone(charID, barer);
+        try {
+            Response<SkillsDone> resp = skills.execute();
+            if (resp.isSuccessful())
+                return resp.body();
+            else refreshTokens(charID, mainContext);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static void getMailtoDB(List<MailHeaders> listmails, int charID, String accsToken) {
-        if (listmails==null)
+        if (listmails == null)
             Log.i("getMailtoDB", "entry list is empty");
         else {
             for (MailHeaders mail : listmails) {
@@ -333,54 +405,13 @@ public class HttpService extends IntentService {
         }
     }
 
-    @Nullable
-    public static List<Wallet> getWallet(int charID, String accsToken){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(CS.BASE_URL_ESI)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        GetDataESI service = retrofit.create(GetDataESI.class);
-        String barer = "Bearer " + accsToken;
-        Call<List<Wallet>> character = service.getWallet(charID, barer);
-        try {
-            Response<List<Wallet>> resp = character.execute();
-            if (resp.isSuccessful())
-                return resp.body();
-            else refreshTokens(charID, mainContext);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    @Nullable
-    public static SkillsDone getSkills (int charID, String accsToken){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://esi.tech.ccp.is/dev/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        GetDataESI service = retrofit.create(GetDataESI.class);
-        String barer = "Bearer " + accsToken;
-        Call<SkillsDone> skills = service.getSkillDone(charID, barer);
-        try {
-            Response<SkillsDone> resp = skills.execute();
-            if (resp.isSuccessful())
-                return resp.body();
-            else refreshTokens(charID, mainContext);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    public static void getSkillsToDB (List<Skill> skills,int charID){
+    public static void getSkillsToDB(List<Skill> skills, int charID) {
 
     }
 
-//вызовы
 
+
+    // вызовы
     public static void charCreateNew(Context context, String authcode) {
         mainContext = context;
         spref = context.getSharedPreferences(CS.AUTH_PREF, MODE_PRIVATE);
@@ -398,6 +429,19 @@ public class HttpService extends IntentService {
         getMail.putExtra(MAIL_CHAR_ID, charID);
         context.startService(getMail);
     }
+
+    public static void updateAllCharsMainInfo(Context context) {
+        mainContext = context;
+        spref = context.getSharedPreferences(CS.AUTH_PREF, MODE_PRIVATE);
+        Intent charsUpdate = new Intent(context, HttpService.class);
+        charsUpdate.setAction(ACTION_UPDATE_ALL_CHARS);
+        context.startService(charsUpdate);
+
+    }
+
+
+
+
 
     // default methods
     public void onDestroy() {

@@ -26,7 +26,7 @@ public class CharDBClass {
     String shipName;
     int shipid;
     long shipItemID;
-    int wallet;
+    long wallet;
     int spTotal;
 
     public CharDBClass(String accesToken,
@@ -44,7 +44,7 @@ public class CharDBClass {
                        String shipName,
                        int shipid,
                        long shipItemID,
-                       int wallet,
+                       long wallet,
                        int spTotal) {
         this.accesToken = accesToken;
         this.refreshToken = refreshToken;
@@ -76,7 +76,7 @@ public class CharDBClass {
         this.shipid = shipid;
         this.shipItemID = shipItemID;
         this.wallet = wallet;
-        this.spTotal=spTotal;
+        this.spTotal = spTotal;
     }
 
     public CharDBClass(Cursor cursor) {
@@ -96,7 +96,7 @@ public class CharDBClass {
         this.shipName = cursor.getString(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SHIP_NAME));
         this.shipid = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SHIP_ID));
         this.shipItemID = cursor.getLong(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SHIP_ITEM_ID));
-        this.wallet = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_WALLET));
+        this.wallet = cursor.getLong(cursor.getColumnIndex(DBColumns.CharTable.CHAR_WALLET));
         this.spTotal = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SP_TOTAL));
     }
 
@@ -121,50 +121,69 @@ public class CharDBClass {
 
     public ContentValues toContentValues() {
         ContentValues cv = new ContentValues();
-        cv.put(DBColumns.CharTable.CHAR_ACS_TOKEN,accesToken);
-        cv.put(DBColumns.CharTable.CHAR_REFRESH_TOKEN,refreshToken);
-        cv.put(DBColumns.CharTable.CHAR_CREST_ID,charID);
-        cv.put(DBColumns.CharTable.CHAR_NAME,charName);
-        cv.put(DBColumns.CharTable.CHAR_GENDER,gender);
-        cv.put(DBColumns.CharTable.CHAR_BIRTHDAY,birthday);
-        cv.put(DBColumns.CharTable.CHAR_RACE_INT,race);
-        cv.put(DBColumns.CharTable.CHAR_RACE_STR,raceStr);
-        cv.put(DBColumns.CharTable.CHAR_DESCRIPTION,description);
-        cv.put(DBColumns.CharTable.CHAR_CORP_ID,corpID);
-        cv.put(DBColumns.CharTable.CHAR_CORP_NAME,corpName);
-        cv.put(DBColumns.CharTable.CHAR_CORP_MEMBERS,corpMembers);
-        cv.put(DBColumns.CharTable.CHAR_CORP_TIKER,corpTiker);
-        cv.put(DBColumns.CharTable.CHAR_SHIP_NAME,shipName);
-        cv.put(DBColumns.CharTable.CHAR_SHIP_ID,shipid);
-        cv.put(DBColumns.CharTable.CHAR_SHIP_ITEM_ID,shipItemID);
-        cv.put(DBColumns.CharTable.CHAR_WALLET,wallet);
-        cv.put(DBColumns.CharTable.CHAR_SP_TOTAL,spTotal);
+        cv.put(DBColumns.CharTable.CHAR_ACS_TOKEN, accesToken);
+        cv.put(DBColumns.CharTable.CHAR_REFRESH_TOKEN, refreshToken);
+        cv.put(DBColumns.CharTable.CHAR_CREST_ID, charID);
+        cv.put(DBColumns.CharTable.CHAR_NAME, charName);
+        cv.put(DBColumns.CharTable.CHAR_GENDER, gender);
+        cv.put(DBColumns.CharTable.CHAR_BIRTHDAY, birthday);
+        cv.put(DBColumns.CharTable.CHAR_RACE_INT, race);
+        cv.put(DBColumns.CharTable.CHAR_RACE_STR, raceStr);
+        cv.put(DBColumns.CharTable.CHAR_DESCRIPTION, description);
+        cv.put(DBColumns.CharTable.CHAR_CORP_ID, corpID);
+        cv.put(DBColumns.CharTable.CHAR_CORP_NAME, corpName);
+        cv.put(DBColumns.CharTable.CHAR_CORP_MEMBERS, corpMembers);
+        cv.put(DBColumns.CharTable.CHAR_CORP_TIKER, corpTiker);
+        cv.put(DBColumns.CharTable.CHAR_SHIP_NAME, shipName);
+        cv.put(DBColumns.CharTable.CHAR_SHIP_ID, shipid);
+        cv.put(DBColumns.CharTable.CHAR_SHIP_ITEM_ID, shipItemID);
+        cv.put(DBColumns.CharTable.CHAR_WALLET, wallet);
+        cv.put(DBColumns.CharTable.CHAR_SP_TOTAL, spTotal);
         return cv;
     }
 
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
-        bundle.putString(DBColumns.CharTable.CHAR_ACS_TOKEN,accesToken);
-        bundle.putString(DBColumns.CharTable.CHAR_REFRESH_TOKEN,refreshToken);
-        bundle.putInt(DBColumns.CharTable.CHAR_CREST_ID,charID);
-        bundle.putString(DBColumns.CharTable.CHAR_NAME,charName);
-        bundle.putString(DBColumns.CharTable.CHAR_GENDER,gender);
-        bundle.putString(DBColumns.CharTable.CHAR_BIRTHDAY,birthday);
-        bundle.putInt(DBColumns.CharTable.CHAR_RACE_INT,race);
-        bundle.putString(DBColumns.CharTable.CHAR_RACE_STR,raceStr);
-        bundle.putString(DBColumns.CharTable.CHAR_DESCRIPTION,description);
-        bundle.putInt(DBColumns.CharTable.CHAR_CORP_ID,corpID);
-        bundle.putString(DBColumns.CharTable.CHAR_CORP_NAME,corpName);
-        bundle.putInt(DBColumns.CharTable.CHAR_CORP_MEMBERS,corpMembers);
-        bundle.putString(DBColumns.CharTable.CHAR_CORP_TIKER,corpTiker);
-        bundle.putString(DBColumns.CharTable.CHAR_SHIP_NAME,shipName);
-        bundle.putInt(DBColumns.CharTable.CHAR_SHIP_ID,shipid);
-        bundle.putLong(DBColumns.CharTable.CHAR_SHIP_ITEM_ID,shipItemID);
+        bundle.putString(DBColumns.CharTable.CHAR_ACS_TOKEN, accesToken);
+        bundle.putString(DBColumns.CharTable.CHAR_REFRESH_TOKEN, refreshToken);
+        bundle.putInt(DBColumns.CharTable.CHAR_CREST_ID, charID);
+        bundle.putString(DBColumns.CharTable.CHAR_NAME, charName);
+        bundle.putString(DBColumns.CharTable.CHAR_GENDER, gender);
+        bundle.putString(DBColumns.CharTable.CHAR_BIRTHDAY, birthday);
+        bundle.putInt(DBColumns.CharTable.CHAR_RACE_INT, race);
+        bundle.putString(DBColumns.CharTable.CHAR_RACE_STR, raceStr);
+        bundle.putString(DBColumns.CharTable.CHAR_DESCRIPTION, description);
+        bundle.putInt(DBColumns.CharTable.CHAR_CORP_ID, corpID);
+        bundle.putString(DBColumns.CharTable.CHAR_CORP_NAME, corpName);
+        bundle.putInt(DBColumns.CharTable.CHAR_CORP_MEMBERS, corpMembers);
+        bundle.putString(DBColumns.CharTable.CHAR_CORP_TIKER, corpTiker);
+        bundle.putString(DBColumns.CharTable.CHAR_SHIP_NAME, shipName);
+        bundle.putInt(DBColumns.CharTable.CHAR_SHIP_ID, shipid);
+        bundle.putLong(DBColumns.CharTable.CHAR_SHIP_ITEM_ID, shipItemID);
         return bundle;
     }
+
+
+    public long getWallet() {
+        return wallet;
+    }
+
+    public void setWallet(long wallet) {
+        this.wallet = wallet;
+    }
+
+    public int getSpTotal() {
+        return spTotal;
+    }
+
+    public void setSpTotal(int spTotal) {
+        this.spTotal = spTotal;
+    }
+
     public int getId() {
         return id;
     }
+
     public String getAccesToken() {
         return accesToken;
     }
@@ -295,8 +314,8 @@ public class CharDBClass {
     }
 
     @Override
-public String toString(){
-    return charName+"  "+corpName;
-}
+    public String toString() {
+        return charName + "  " + corpName;
+    }
 
 }

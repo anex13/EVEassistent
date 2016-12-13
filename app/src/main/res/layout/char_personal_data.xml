@@ -71,7 +71,8 @@
         android:id="@+id/char_birthday"
         app:layout_constraintTop_toBottomOf="@+id/char_corp"
         app:layout_constraintLeft_toLeftOf="@+id/char_name"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/darker_gray" />
 
     <ImageView
         android:layout_width="32dp"

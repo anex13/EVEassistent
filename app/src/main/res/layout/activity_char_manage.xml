@@ -19,8 +19,9 @@
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp" />
-
-    <ListView
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/charmng_swl"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -34,7 +35,13 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:id="@+id/chars_list" />
+        android:layout_marginTop="8dp">
+
+        <ListView
+            android:id="@+id/chars_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </android.support.constraint.ConstraintLayout>
