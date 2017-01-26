@@ -24,7 +24,7 @@
 
     <TextView
         android:text="From : TrustMe I'amIngener"
-        android:layout_width="wrap_content"
+        android:layout_width="259dp"
         android:layout_height="wrap_content"
         android:id="@+id/mail_from_string"
         android:layout_marginStart="8dp"
@@ -35,7 +35,7 @@
 
     <TextView
         android:text="Subj: Mail is working !!!"
-        android:layout_width="wrap_content"
+        android:layout_width="395dp"
         android:layout_height="wrap_content"
         android:id="@+id/mail_subj_string"
         android:layout_marginTop="24dp"
@@ -45,7 +45,7 @@
 
     <TextView
         android:text="10.12.2016"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/mail_date_string"
         app:layout_constraintTop_toTopOf="@+id/mail_from_string"

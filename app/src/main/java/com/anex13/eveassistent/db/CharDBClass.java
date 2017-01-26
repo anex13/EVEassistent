@@ -28,6 +28,7 @@ public class CharDBClass {
     long shipItemID;
     long wallet;
     int spTotal;
+    long tokenExpire;
 
     public CharDBClass(String accesToken,
                        String refreshToken,
@@ -45,7 +46,8 @@ public class CharDBClass {
                        int shipid,
                        long shipItemID,
                        long wallet,
-                       int spTotal) {
+                       int spTotal,
+                       long tokenExpire) {
         this.accesToken = accesToken;
         this.refreshToken = refreshToken;
         this.charID = charID;
@@ -77,6 +79,7 @@ public class CharDBClass {
         this.shipItemID = shipItemID;
         this.wallet = wallet;
         this.spTotal = spTotal;
+        this.tokenExpire = tokenExpire;
     }
 
     public CharDBClass(Cursor cursor) {
@@ -98,6 +101,7 @@ public class CharDBClass {
         this.shipItemID = cursor.getLong(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SHIP_ITEM_ID));
         this.wallet = cursor.getLong(cursor.getColumnIndex(DBColumns.CharTable.CHAR_WALLET));
         this.spTotal = cursor.getInt(cursor.getColumnIndex(DBColumns.CharTable.CHAR_SP_TOTAL));
+        this.tokenExpire = cursor.getLong(cursor.getColumnIndex(DBColumns.CharTable.CHAR_TOKEN_LT));
     }
 
     public CharDBClass(Bundle bundle) {
@@ -139,6 +143,7 @@ public class CharDBClass {
         cv.put(DBColumns.CharTable.CHAR_SHIP_ITEM_ID, shipItemID);
         cv.put(DBColumns.CharTable.CHAR_WALLET, wallet);
         cv.put(DBColumns.CharTable.CHAR_SP_TOTAL, spTotal);
+        cv.put(DBColumns.CharTable.CHAR_TOKEN_LT,tokenExpire);
         return cv;
     }
 
@@ -160,6 +165,7 @@ public class CharDBClass {
         bundle.putString(DBColumns.CharTable.CHAR_SHIP_NAME, shipName);
         bundle.putInt(DBColumns.CharTable.CHAR_SHIP_ID, shipid);
         bundle.putLong(DBColumns.CharTable.CHAR_SHIP_ITEM_ID, shipItemID);
+        bundle.putLong(DBColumns.CharTable.CHAR_TOKEN_LT,tokenExpire);
         return bundle;
     }
 
@@ -311,6 +317,18 @@ public class CharDBClass {
 
     public void setShipItemID(long shipItemID) {
         this.shipItemID = shipItemID;
+    }
+
+    public long getTokenExpire() {
+        return tokenExpire;
+    }
+
+    public void setTokenExpire(long tokenExpire) {
+        this.tokenExpire = tokenExpire;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

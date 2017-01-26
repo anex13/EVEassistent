@@ -67,7 +67,7 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
             @Override
             public void onRefresh() {
                 swrefl.setRefreshing(true);
-                HttpService.updateAllCharsMainInfo();
+                HttpService.updateAllCharsMainInfo(getApplicationContext());
             }
         });
 
@@ -163,3 +163,4 @@ public class CharManage extends AppCompatActivity implements LoaderManager.Loade
         startActivity(tomainactivity);
     }
 }
+// TODO: 25.01.2017 прикрутить прогресбар к добавлению персов

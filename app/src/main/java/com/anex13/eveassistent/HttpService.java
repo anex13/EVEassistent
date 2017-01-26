@@ -29,6 +29,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -86,7 +88,8 @@ public class HttpService extends IntentService {
                         ship.getShipTypeId(),
                         ship.getShipItemId(),
                         wallet.getBalance(),
-                        skillsDone.getTotalSp());
+                        skillsDone.getTotalSp(),
+                        ((token.getExpiresIn() * 1000) + System.currentTimeMillis()));
                 Log.i("created char", newchar.toString());
                 new Thread(new Runnable() {
                     @Override
@@ -103,14 +106,16 @@ public class HttpService extends IntentService {
             case ACTION_GET_MAIL: {
                 int id = intent.getIntExtra(MAIL_CHAR_ID, 0);
                 CharDBClass char1 = getCharfrfomdb(id);
-                tryToken(char1.getAccesToken(), char1.getCharID());
-                //List<MailHeaders> list =updateMailList(char1.getCharID(),char1.getAccesToken());
-                //if (list!=null)
-                getMailtoDB(updateMailList(char1.getCharID(), char1.getAccesToken()), char1.getCharID(), char1.getAccesToken());
-                // else Log.i("mail list","list is null");
+                tryToken(char1.getTokenExpire(), char1.getCharID());
+                List<MailHeaders> list = updateMailList(char1.getCharID(), char1.getAccesToken());
+                if (list != null) {
+                    Log.i("update mails", "headers not null");
+                    getMailtoDB(updateMailList(char1.getCharID(), char1.getAccesToken()), char1.getCharID(), char1.getAccesToken());
+                } else Log.i("mail list", "list is null");
+                break;
             }
-            case ACTION_UPDATE_ALL_CHARS: {
-                Cursor c=null;
+            case ACTION_UPDATE_ALL_CHARS: {     // TODO: 26.01.2017 переделать
+                Cursor c = null;
                 try {
                     c = mainContext.getContentResolver().query(DBColumns.CharTable.CONTENT_URI, null, null, null, null, null);
                     if (c != null) {
@@ -118,11 +123,10 @@ public class HttpService extends IntentService {
                             do {
 
                                 CharDBClass user = new CharDBClass(c);
-                                CharPublicData pd=getPublicData(user.getCharID());
-                                CorpInfo ci=getCorpInfo(pd.getCorporationId());
-                                CharShipInfo ship=getCharShipInfo(user.getAccesToken(),user.getCharID());
-                                Wallet isk=getWallet(user.getCharID(),)
-
+                                CharPublicData pd = getPublicData(user.getCharID());
+                                CorpInfo ci = getCorpInfo(pd.getCorporationId());
+                                CharShipInfo ship = getCharShipInfo(user.getAccesToken(), user.getCharID());
+                                // List <Wallet> isk=getWallet(user.getCharID(),user.getAccesToken());
 
 
                             } while (c.moveToNext());
@@ -133,9 +137,9 @@ public class HttpService extends IntentService {
                     }
 
                 } finally {
-                    if (c!=null)
-                    c.close();
-                    Log.i("chars udate all", "close srvers cursr");
+                    if (c != null)
+                        c.close();
+                    Log.i("chars udate all", "close chars cursr");
                 }
             }
 
@@ -190,6 +194,7 @@ public class HttpService extends IntentService {
                     public void run() {
                         pers.setAccesToken(resp.body().getAccessToken());
                         pers.setRefreshToken(resp.body().getRefreshToken());
+                        pers.setTokenExpire(System.currentTimeMillis() + (resp.body().getExpiresIn() * 1000));
                         context.getContentResolver().update(uri, pers.toContentValues(), null, null);
                     }
                 }).start();
@@ -201,7 +206,7 @@ public class HttpService extends IntentService {
             e.printStackTrace();
         }
 
-    }                       //refresh tokens   //todo переделать в бд
+    }                       //refresh tokens
 
     @Nullable
     private static CharID validate(String accsToken) {
@@ -220,13 +225,13 @@ public class HttpService extends IntentService {
             e.printStackTrace();
         }
         return null;
-    }                                          //get id and char name for token  //todo переделать в бд
+    }                                          //get id and char name for token
 
-    public static void tryToken(String acsToken, int charID) {
-        getCharShipInfo(acsToken, charID);
+    public static void tryToken(long expire, int charID) {
+        if (expire < System.currentTimeMillis() - 5000)
+            refreshTokens(charID, mainContext);
+
     }
-
-
 
 
     //public data without token
@@ -383,24 +388,29 @@ public class HttpService extends IntentService {
             Log.i("getMailtoDB", "entry list is empty");
         else {
             for (MailHeaders mail : listmails) {
-                MailDBClass mailfull = null;
+
+                Log.i ("mailbody",mail.getSubject());
                 Retrofit retrofita = new Retrofit.Builder()
                         .baseUrl(CS.BASE_URL_ESI)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
-                GetDataESI servicea = retrofita.create(GetDataESI.class);
-                Call<Mail> mailbody = servicea.getMailBody(charID, mail.getMailId(), ("Barer " + accsToken));
+                GetDataESI service = retrofita.create(GetDataESI.class);
+                Call<Mail> mailbody = service.getMailBody(charID, mail.getMailId(), ("Barer " + accsToken));
                 try {
+                    Log.e("try", "  ");
                     Response<Mail> resp = mailbody.execute();
-                    if (resp.isSuccessful())
+                    if (resp.isSuccessful()) {
+                        Log.e("MAil", "mail " + mail.getSubject() + "got ");
+                        MailDBClass mailfull = new MailDBClass(mail.getIsRead(), mail.getMailId(), mail.getFrom(), getPublicData(mail.getFrom()).getName(), mail.getSubject(), resp.body().getBody(), resp.body().getTimestamp(), charID);
 
-                        mailfull = new MailDBClass(mail.getIsRead(), mail.getMailId(), mail.getFrom(), getPublicData(charID).getName(), mail.getSubject(), resp.body().getBody(), resp.body().getTimestamp(), charID);
-                    Log.e("MAil", "mail " + resp.body().getSubject() + "got ");
+                            mainContext.getContentResolver().insert(DBColumns.MailTable.CONTENT_URI, mailfull.toContentValues());
+                            Log.i("mailfull", mailfull.getSubject() + "add to sql");
+                    }
+                    else Log.e("mailfull", resp.message());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (mailfull != null)
-                    mainContext.getContentResolver().insert(DBColumns.MailTable.CONTENT_URI, mailfull.toContentValues());
+
             }
         }
     }
@@ -408,7 +418,6 @@ public class HttpService extends IntentService {
     public static void getSkillsToDB(List<Skill> skills, int charID) {
 
     }
-
 
 
     // вызовы
@@ -440,13 +449,13 @@ public class HttpService extends IntentService {
     }
 
 
-
-
-
     // default methods
     public void onDestroy() {
         super.onDestroy();
     }
 
-
+    public static long ConvertTime(String tinme) {
+        long timeMilis = 0;
+        return timeMilis;
+    }
 }

@@ -99,9 +99,9 @@ public class CS {
             + "esi-universe.read_structures.v1 "//: Allows querying the location and type of structures that the character has docking access at.
             + "esi-calendar.respond_calendar_events.v1 "//: Allows updating of a character's calendar event responses
             + "esi-search.search_structures.v1 "//: Allows searching over all structures that a character can see in the structure browser.
-            //+" esi-mail.read_mail.v1 "
-            //+"esi-mail.send_mail.v1 "
-            //+"esi-mail.organize_mail.v1 "
+            +" esi-mail.read_mail.v1 "
+            +"esi-mail.send_mail.v1 "
+            +"esi-mail.organize_mail.v1 "
             + "esi-ui.write_waypoint.v1"//: Allows manipulating waypoints in game client remotely
             + "&";
     public static final String CHAR_NAME = "char name";

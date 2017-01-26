@@ -8,152 +8,84 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MailHeaders {@SerializedName("recipients")
-@Expose
-private List<Recipient> recipients = null;
-    @SerializedName("subject")
-    @Expose
-    private String subject;
-    @SerializedName("is_read")
-    @Expose
-    private Boolean isRead;
+public class MailHeaders {
+
     @SerializedName("mail_id")
     @Expose
     private Integer mailId;
-    @SerializedName("timestamp")
+    @SerializedName("subject")
     @Expose
-    private String timestamp;
+    private String subject;
     @SerializedName("from")
     @Expose
     private Integer from;
+    @SerializedName("timestamp")
+    @Expose
+    private String timestamp;
     @SerializedName("labels")
     @Expose
     private List<Integer> labels = null;
+    @SerializedName("recipients")
+    @Expose
+    private List<Recipient> recipients = null;
+    @SerializedName("is_read")
+    @Expose
+    private Boolean isRead;
 
-    /**
-     *
-     * @return
-     * The recipients
-     */
-    public List<Recipient> getRecipients() {
-        return recipients;
-    }
-
-    /**
-     *
-     * @param recipients
-     * The recipients
-     */
-    public void setRecipients(List<Recipient> recipients) {
-        this.recipients = recipients;
-    }
-
-    /**
-     *
-     * @return
-     * The subject
-     */
-    public String getSubject() {
-        return subject;
-    }
-
-    /**
-     *
-     * @param subject
-     * The subject
-     */
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    /**
-     *
-     * @return
-     * The isRead
-     */
-    public Boolean getIsRead() {
-        return isRead;
-    }
-
-    /**
-     *
-     * @param isRead
-     * The is_read
-     */
-    public void setIsRead(Boolean isRead) {
-        this.isRead = isRead;
-    }
-
-    /**
-     *
-     * @return
-     * The mailId
-     */
     public Integer getMailId() {
         return mailId;
     }
 
-    /**
-     *
-     * @param mailId
-     * The mail_id
-     */
     public void setMailId(Integer mailId) {
         this.mailId = mailId;
     }
 
-    /**
-     *
-     * @return
-     * The timestamp
-     */
-    public String getTimestamp() {
-        return timestamp;
+    public String getSubject() {
+        return subject;
     }
 
-    /**
-     *
-     * @param timestamp
-     * The timestamp
-     */
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
-    /**
-     *
-     * @return
-     * The from
-     */
     public Integer getFrom() {
         return from;
     }
 
-    /**
-     *
-     * @param from
-     * The from
-     */
     public void setFrom(Integer from) {
         this.from = from;
     }
 
-    /**
-     *
-     * @return
-     * The labels
-     */
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public List<Integer> getLabels() {
         return labels;
     }
 
-    /**
-     *
-     * @param labels
-     * The labels
-     */
     public void setLabels(List<Integer> labels) {
         this.labels = labels;
+    }
+
+    public List<Recipient> getRecipients() {
+        return recipients;
+    }
+
+    public void setRecipients(List<Recipient> recipients) {
+        this.recipients = recipients;
+    }
+
+    public Boolean getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(Boolean isRead) {
+        this.isRead = isRead;
     }
 
 }

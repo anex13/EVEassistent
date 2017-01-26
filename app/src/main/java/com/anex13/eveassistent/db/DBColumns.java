@@ -21,6 +21,7 @@ public class DBColumns {
 
         public static final String CHAR_CREST_ID = "_id";
         public static final String CHAR_ACS_TOKEN = "acstoken";
+        public static final String CHAR_TOKEN_LT = "tokenlivetime";
         public static final String CHAR_REFRESH_TOKEN = "refreshtoken";
         public static final String CHAR_NAME = "charname";
         public static final String CHAR_GENDER = "gender";
@@ -43,6 +44,7 @@ public class DBColumns {
                 + CHAR_CREST_ID + " integer primary key, "
                 + CHAR_ACS_TOKEN + " text,"
                 + CHAR_REFRESH_TOKEN + " text,"
+                + CHAR_TOKEN_LT + " integer,"
                 + CHAR_NAME + " text,"
                 + CHAR_GENDER + " text,"
                 + CHAR_BIRTHDAY + " text,"

@@ -39,8 +39,8 @@ public class MailAdapter extends CursorAdapter {
         ((TextView) view.findViewById(R.id.mail_from_string)).setText(mail.getFromName());
         ((TextView) view.findViewById(R.id.mail_subj_string)).setText(mail.getSubject());
         ((TextView) view.findViewById(R.id.mail_date_string)).setText(mail.getTimestamp());
-        final ImageView userpic = (ImageView) view.findViewById(R.id.user_pic);
-        final String userpicurl = CS.BASE_URL_IMG + CS.CHAR_URL_IMG + mail.getFromID() + CS.IMG_SIZE_128 + ".jpg";
+        final ImageView userpic = (ImageView) view.findViewById(R.id.mail_from_img);
+        final String userpicurl = CS.BASE_URL_IMG + CS.CHAR_URL_IMG + mail.getFromID() + CS.IMG_SIZE_64 + ".jpg";
         Picasso.with(context)
                 .load(userpicurl)
                 .networkPolicy(NetworkPolicy.OFFLINE)
@@ -73,4 +73,3 @@ public class MailAdapter extends CursorAdapter {
 
     }
 }
-//// TODO: 07.12.2016 запилить размеры картинок в стринги по дпи
