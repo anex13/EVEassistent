@@ -385,33 +385,32 @@ public class HttpService extends IntentService {
 
     public static void getMailtoDB(List<MailHeaders> listmails, int charID, String accsToken) {
         if (listmails == null)
+
             Log.i("getMailtoDB", "entry list is empty");
-        else {
-            for (MailHeaders mail : listmails) {
+        else for (MailHeaders mail : listmails) {
+            MailDBClass mailfull = null;
+            Log.e("mail", mail.getSubject() + "  " + mail.getTimestamp());
 
-                Log.i ("mailbody",mail.getSubject());
-                Retrofit retrofita = new Retrofit.Builder()
-                        .baseUrl(CS.BASE_URL_ESI)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-                GetDataESI service = retrofita.create(GetDataESI.class);
-                Call<Mail> mailbody = service.getMailBody(charID, mail.getMailId(), ("Barer " + accsToken));
-                try {
-                    Log.e("try", "  ");
-                    Response<Mail> resp = mailbody.execute();
-                    if (resp.isSuccessful()) {
-                        Log.e("MAil", "mail " + mail.getSubject() + "got ");
-                        MailDBClass mailfull = new MailDBClass(mail.getIsRead(), mail.getMailId(), mail.getFrom(), getPublicData(mail.getFrom()).getName(), mail.getSubject(), resp.body().getBody(), resp.body().getTimestamp(), charID);
-
-                            mainContext.getContentResolver().insert(DBColumns.MailTable.CONTENT_URI, mailfull.toContentValues());
-                            Log.i("mailfull", mailfull.getSubject() + "add to sql");
-                    }
-                    else Log.e("mailfull", resp.message());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(CS.BASE_URL_ESI)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            GetDataESI service = retrofit.create(GetDataESI.class);
+            String barer = "Bearer " + accsToken;
+            Call <Mail> mailCall = service.getMailBody(charID,mail.getMailId(), barer);
+            try {
+                Response<Mail> resp = mailCall.execute();
+                if (resp.isSuccessful()) {
+                    Log.e("MAil", "mail " + mail.getSubject() + "got ");
+                    mailfull = new MailDBClass(mail.getIsRead(), mail.getMailId(), mail.getFrom(), getPublicData(mail.getFrom()).getName()
+                            , mail.getSubject(), resp.body().getBody(), resp.body().getTimestamp(), charID);
+                } else
+                    Log.e("mailfull", resp.message());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            if (mailfull != null)
+                mainContext.getContentResolver().insert(DBColumns.MailTable.CONTENT_URI, mailfull.toContentValues());
         }
     }
 

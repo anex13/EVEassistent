@@ -11,101 +11,71 @@ import java.util.List;
 
 public class Mail {
 
-    @SerializedName("recipients")
-    @Expose
-    private List<Recipient> recipient = null;
-    @SerializedName("subject")
-    @Expose
-    private String subject;
-    @SerializedName("from")
-    @Expose
-    private Integer from;
     @SerializedName("body")
     @Expose
     private String body;
-    @SerializedName("timestamp")
+    @SerializedName("from")
     @Expose
-    private String timestamp;
+    private Integer from;
+    @SerializedName("labels")
+    @Expose
+    private List<Integer> labels = null;
     @SerializedName("read")
     @Expose
     private Boolean read;
+    @SerializedName("subject")
+    @Expose
+    private String subject;
+    @SerializedName("timestamp")
+    @Expose
+    private String timestamp;
 
-    public List<Recipient> getRecipient() {
-        return recipient;
-    }
-
-    public void setRecipient(List<Recipient> recipient) {
-        this.recipient = recipient;
-    }
-
-    /**
-     * @return The subject
-     */
-    public String getSubject() {
-        return subject;
-    }
-
-    /**
-     * @param subject The subject
-     */
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    /**
-     * @return The from
-     */
-    public Integer getFrom() {
-        return from;
-    }
-
-    /**
-     * @param from The from
-     */
-    public void setFrom(Integer from) {
-        this.from = from;
-    }
-
-    /**
-     * @return The body
-     */
     public String getBody() {
         return body;
     }
 
-    /**
-     * @param body The body
-     */
     public void setBody(String body) {
         this.body = body;
     }
 
-    /**
-     * @return The timestamp
-     */
-    public String getTimestamp() {
-        return timestamp;
+    public Integer getFrom() {
+        return from;
     }
 
-    /**
-     * @param timestamp The timestamp
-     */
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setFrom(Integer from) {
+        this.from = from;
     }
 
-    /**
-     * @return The read
-     */
+    public List<Integer> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<Integer> labels) {
+        this.labels = labels;
+    }
+
     public Boolean getRead() {
         return read;
     }
 
-    /**
-     * @param read The read
-     */
     public void setRead(Boolean read) {
         this.read = read;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
 }
