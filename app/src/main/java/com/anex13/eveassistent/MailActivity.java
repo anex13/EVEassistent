@@ -11,11 +11,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.anex13.eveassistent.classesForApi.mail.Mail;
 import com.anex13.eveassistent.db.DBColumns;
 import com.anex13.eveassistent.db.MailAdapter;
+import com.anex13.eveassistent.db.MailDBClass;
 
 public class MailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -55,7 +59,16 @@ public class MailActivity extends AppCompatActivity implements LoaderManager.Loa
                 else Log.i("DEFAULT CHAR", "not set");
             }
         });
-
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Cursor c = ((Cursor) lv.getAdapter().getItem(i));
+                MailDBClass mail = new MailDBClass(c);
+                Log.e("mail itm on click",mail.getBody());
+                View hidden = (View) view.findViewById(R.id.mail_item_body);
+                hidden.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
@@ -66,7 +79,7 @@ public class MailActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = Uri.parse(DBColumns.MailTable.CONTENT_URI + "/char/" + spref.getInt(CS.SPREF_DEF_CHAR, 0));
-        return new CursorLoader(this, uri, null, null, null, null);
+        return new CursorLoader(this, uri, null, null, null, DBColumns.MailTable.MAIL_MAIL_TIME+" DESC");
     }
 
     @Override
@@ -85,4 +98,3 @@ public class MailActivity extends AppCompatActivity implements LoaderManager.Loa
         startActivity(tomainactivity);
     }
 }
-// TODO: 09.12.2016 ПРОВЕРЯТЬ ДОСТУПНОСТЬ СКОУПОВ

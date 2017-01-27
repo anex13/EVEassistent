@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:id="@+id/mail_item_l"
     android:background="?android:attr/scrollbarThumbVertical">
 
@@ -13,23 +13,23 @@
         app:srcCompat="@drawable/c95519167_128"
         android:id="@+id/mail_from_img"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_height="64dp"
         tools:layout_constraintTop_creator="1"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp" />
+        android:layout_height="64dp"
+        app:layout_constraintVertical_bias="0.0"
+        android:contentDescription="" />
 
     <TextView
         android:text="From : TrustMe I'amIngener"
         android:layout_width="259dp"
         android:layout_height="wrap_content"
         android:id="@+id/mail_from_string"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintLeft_toRightOf="@+id/mail_from_img"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="24dp"
         app:layout_constraintTop_toTopOf="@+id/mail_from_img"
         android:textColor="@android:color/background_light" />
 
@@ -45,7 +45,7 @@
 
     <TextView
         android:text="10.12.2016"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/mail_date_string"
         app:layout_constraintTop_toTopOf="@+id/mail_from_string"
@@ -53,4 +53,23 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginRight="8dp"
         android:textColor="@android:color/background_light" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/mail_item_body"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        android:background="@android:color/transparent"
+        android:isScrollContainer="false"
+        android:focusableInTouchMode="false"
+        android:filterTouchesWhenObscured="true"
+        android:clickable="false"
+        app:layout_constraintTop_toBottomOf="@+id/mail_from_img"
+        android:layout_marginTop="8dp"
+        android:focusable="false"
+        android:textColor="@android:color/background_light" />
+
 </android.support.constraint.ConstraintLayout>
